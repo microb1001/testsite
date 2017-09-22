@@ -25,13 +25,20 @@ import (
 "log"
 "net/http"
 "strings"
+"time"
 )
 
 func main() {
+
+	items[550]=1
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/image/", imageHandler)
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
+
+var items [100000]int
+var lst []int
+var cnt int = 0
 
 // indexTemplate is the main site template.
 // The default template includes two template blocks ("sidebar" and "content")
@@ -51,6 +58,9 @@ type Link struct {
 
 // indexHandler is an HTTP handler that serves the index page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	lst=make([]int,0,120000)
+	start := time.Now()
+
 	data := &Index{
 		Title: "Image gallery 11-11",
 		Body:  "Welcome to the image gallery.",
@@ -61,9 +71,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			Title: img.Title,
 		})
 	}
+	for item := range items {
+		if item==1 {
+			cnt=cnt+1
+		}
+		lst=append(lst,item)
+	}
 	if err := indexTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.Println("timer ",cnt, elapsed)
 }
 
 // imageTemplate is a clone of indexTemplate that provides
