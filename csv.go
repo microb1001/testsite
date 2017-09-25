@@ -1,8 +1,94 @@
 package main
 
-// images specifies the site content: a collection of images.   https://lenta.ru/
-var images = map[string]*Image{
-	"go":     {"The Go Gopher", "https://golang.org/doc/gopher/frontpage.png"},
-	"google": {"The Google Logo", "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"},
-	"lenta": {"The Lenta Logo", "https://icdn.lenta.ru/images/2017/09/20/18/20170920184345749/pic_9236d1c3d84b722a85fe66166a0ef251.jpg"},
+import (
+	"os"
+	"encoding/csv"
+	"bufio"
+	"io"
+	"log"
+	"fmt"
+	"reflect"
+)
+
+func parse2(fname string,fields []string){
+	//"list.csv"
+	csvFile, _ := os.Open(fname)
+	r := csv.NewReader(bufio.NewReader(csvFile))
+	r.Comma = ';'
+	var people []good
+	for {
+		line, err := r.Read()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
+		people = append(people, good{
+			Articul: line[0],
+			Info:  line[1],
+			Image: line[2],
+		})
+		fmt.Println(line)
+	}
+	fmt.Println(people)
+
+
+}
+
+func dump(datasets interface{}, fname string) {
+	items := reflect.ValueOf(datasets)
+	if items.Kind() == reflect.Slice {
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			if item.Kind() == reflect.Struct {
+				v := reflect.Indirect(item)
+				for j := 0; j < v.NumField(); j++ {
+					fmt.Println(v.Type().Field(j).Name, v.Field(j).Interface())
+				}
+			}
+		}
+	}
+}
+
+func parse(get_csv_to interface{}, fname string) {
+
+	csvFile, err := os.Open(fname)
+	if err != nil {
+		log.Fatal(err)
+		}
+	r := csv.NewReader(bufio.NewReader(csvFile))
+	r.Comma = ';'
+	var people []good
+	for {
+		line, err := r.Read()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
+		people = append(people, good{
+			Articul: line[0],
+			Info:  line[1],
+			Image: line[2],
+		})
+		fmt.Println(line)
+	}
+	fmt.Println(people)
+
+
+
+
+	items := reflect.ValueOf(get_csv_to)
+	if items.Kind() == reflect.Slice {
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			if item.Kind() == reflect.Struct {
+				v := reflect.Indirect(item)
+				for j := 0; j < v.NumField(); j++ {
+					v.Field(j).SetString("103")
+					fmt.Println(v.Type().Field(j).Name, v.Field(j).Interface())
+				}
+			}
+		}
+	}
 }
