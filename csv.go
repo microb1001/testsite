@@ -58,6 +58,11 @@ func parse(get_csv_to interface{}, fname string) {
 		}
 	r := csv.NewReader(bufio.NewReader(csvFile))
 	r.Comma = ';'
+
+	items := reflect.ValueOf(get_csv_to).Elem()
+	itemstype :=items.Type()
+	fmt.Println(itemstype)
+	items.Set(reflect.MakeSlice(itemstype,1,1000))
 	var people []good
 	for {
 		line, err := r.Read()
@@ -71,24 +76,27 @@ func parse(get_csv_to interface{}, fname string) {
 			Info:  line[1],
 			Image: line[2],
 		})
-		fmt.Println(line)
+		//fmt.Println(line)
 	}
+
 	fmt.Println(people)
 
 
 
 
-	items := reflect.ValueOf(get_csv_to)
+
 	if items.Kind() == reflect.Slice {
 		for i := 0; i < items.Len(); i++ {
 			item := items.Index(i)
 			if item.Kind() == reflect.Struct {
 				v := reflect.Indirect(item)
 				for j := 0; j < v.NumField(); j++ {
-					v.Field(j).SetString("103")
-					fmt.Println(v.Type().Field(j).Name, v.Field(j).Interface())
+					v.Field(j).SetString("1039")
+					fmt.Println("===",v.Type().Field(j).Name, v.Field(j).Interface())
 				}
 			}
 		}
 	}
+	items.Set(reflect.AppendSlice(items,reflect.ValueOf(people)))
+
 }

@@ -10,10 +10,11 @@ import (
 )
 
 func main() {
-	parse2("list.csv",[]string{"N","UIN", "Артикул", "Описание", "Количество", "Вес", "Цена"})
-	goods=append(goods, good{Info:"123"})
-	goods=append(goods, good{Articul:"123"})
-	parse(goods,"list.csv")
+	//parse2("list.csv",[]string{"N","UIN", "Артикул", "Описание", "Количество", "Вес", "Цена"})
+	goods=append(goods, good{Info:"1231"})
+	goods=append(goods, good{Articul:"1231"})
+	parse(&goods,"list.csv")
+	goods=append(goods, good{Articul:"5555"})
 	dump(goods,"list.csv")
 
 	items[550]=1
