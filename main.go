@@ -11,11 +11,11 @@ import (
 
 func main() {
 	//parse2("list.csv",[]string{"N","UIN", "Артикул", "Описание", "Количество", "Вес", "Цена"})
-	goods=append(goods, good{Info:"1231"})
+	goods=append(goods, good{Info:1231})
 	goods=append(goods, good{Articul:"1231"})
-	parse(&goods,"list.csv")
+	load_csv(&goods,"list.csv", "csv")
 	goods=append(goods, good{Articul:"5555"})
-	dump(goods,"list.csv")
+	dump(goods)
 
 	items[550]=1
 	http.HandleFunc("/", indexHandler)
@@ -45,9 +45,21 @@ type Link struct {
 }
 
 type good struct {
+	UIN int `csv:"UIN"`
+	Barcode int
+	VendorCode string `csv:"Артикул"`
+	Brief string `csv:"Артикул"`
+	Price int `csv:"Цена"`
+	Quantity int `csv:"Цена"`
+	Available bool `csv:"В продаже"`
+	MainCategory string `csv:"Артикул"`
+	Category []string
+	Pictures string   `csv:"Артикул"`
 	Articul string   `csv:"Артикул"`
-	Info  string   `csv:"UIN"`
-	Image string `csv:"Артикул"`
+	Info  int  `csv:"N"`
+	ShortDescription string `csv:"Артикул"`
+	Description string   `csv:"Артикул"`
+	Images string `csv:"Артикул"`
 
 }
 
