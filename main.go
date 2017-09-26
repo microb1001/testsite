@@ -45,9 +45,9 @@ type Link struct {
 }
 
 type good struct {
-	Articul string   `json:"N"`
-	Info  string   `json:"UIN"`
-	Image string `json:"Артикул"`
+	Articul string   `csv:"Артикул"`
+	Info  string   `csv:"UIN"`
+	Image string `csv:"Артикул"`
 
 }
 
