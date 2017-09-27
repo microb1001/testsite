@@ -11,7 +11,9 @@ import (
 type good struct {
 	UIN int `csv:"UIN"`
 	Barcode int
+	ProductId string `csv:"Артикул"`
 	VendorCode string `csv:"Артикул"`
+	ProductName string `csv:"Артикул"`
 	Brief string `csv:"Артикул"`
 	Price int `csv:"Цена"`
 	Quantity int `csv:"Цена"`
@@ -24,6 +26,23 @@ type good struct {
 	ShortDescription string `csv:"Артикул"`
 	Description string   `csv:"Артикул"`
 	Images string `csv:"Артикул"`
+}
+type cart_type struct {
+	VendorCode string
+	Quantity int
+}
+
+type user struct {
+	UID string
+	login string
+	passhash string
+	email string
+	cookie string
+	cart []cart_type
+	shipping_adress1 string
+	shipping_adress2 string
+	shipping_adress3 string
+	payment_info string
 }
 
 var items [100000]good
