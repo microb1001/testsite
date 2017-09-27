@@ -6,31 +6,47 @@ import (
 "net/http"
 "strings"
 "time"
-
 )
 
-func main() {
-	//parse2("list.csv",[]string{"N","UIN", "Артикул", "Описание", "Количество", "Вес", "Цена"})
-	goods=append(goods, good{Info:1231})
-	//goods=append(goods, good{Articul:"1231"})
-	start := time.Now()
-	load_csv(&goods,"listtest.csv", "csv")
-	t := time.Now()
-	elapsed := t.Sub(start)
-	log.Println("timer1 ",cnt, elapsed)
-	goods=append(goods, good{Articul:"5555"})
-	dump(goods)
+type good struct {
+	UIN int `csv:"UIN"`
+	Barcode int
+	VendorCode string `csv:"Артикул"`
+	Brief string `csv:"Артикул"`
+	Price int `csv:"Цена"`
+	Quantity int `csv:"Цена"`
+	Available bool `csv:"В продаже"`
+	MainCategory string `csv:"Артикул"`
+	Category []string `csv:"Описание"`
+	Pictures string   `csv:"Артикул"`
+	Articul string   `csv:"Артикул"`
+	Info  int  `csv:"N"`
+	ShortDescription string `csv:"Артикул"`
+	Description string   `csv:"Артикул"`
+	Images string `csv:"Артикул"`
+}
 
-	items[550]=1
+var items [100000]good
+var goods [] good
+var sel []int
+
+func main() {
+	sel = []int{1, 2, 3,7,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
+	load_csv(&goods,"list.csv", "csv")
+	//dump(goods)
+	for i:=range sel {
+		items[i].Articul="Q1"
+	}
+	items[550].Articul="Q1"
+	items[1551].UIN=1
+
+
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/image/", imageHandler)
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
-var items [100000]int
-var goods [] good
-var lst []int
-var cnt int = 0
+
 
 // indexTemplate is the main site template.
 // The default template includes two template blocks ("sidebar" and "content")
@@ -48,28 +64,12 @@ type Link struct {
 	URL, Title string
 }
 
-type good struct {
-	UIN int `csv:"UIN"`
-	Barcode int
-	VendorCode string `csv:"Артикул"`
-	Brief string `csv:"Артикул"`
-	Price int `csv:"Цена"`
-	Quantity int `csv:"Цена"`
-	Available bool `csv:"В продаже"`
-	MainCategory string `csv:"Артикул"`
-	Category []string
-	Pictures string   `csv:"Артикул"`
-	Articul string   `csv:"Артикул"`
-	Info  int  `csv:"N"`
-	ShortDescription string `csv:"Артикул"`
-	Description string   `csv:"Артикул"`
-	Images string `csv:"Артикул"`
-
-}
 
 // indexHandler is an HTTP handler that serves the index page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	lst=make([]int,0,120000)
+	var lst []good
+	var cnt int = 0
+	lst=make([]good,0,120000)
 	start := time.Now()
 
 	data := &Index{
@@ -82,11 +82,21 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			Title: img.Title,
 		})
 	}
-	for item := range items {
-		if item==1 {
+	/*for _,item := range items {
+		if item.UIN==1 {
 			cnt=cnt+1
+			lst=append(lst,item)
 		}
-		lst=append(lst,item)
+		if item.Articul=="Q1" {
+			cnt=cnt+1
+			lst=append(lst,item)
+		}
+		//lst=append(lst,item)
+
+		//
+	} */
+	for _,i := range sel {
+		lst=append(lst,items[i])
 	}
 	if err := indexTemplate.Execute(w, data); err != nil {
 		log.Println(err)

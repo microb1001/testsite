@@ -8,7 +8,7 @@ import (
 	"log"
 	"reflect"
 	"fmt"
-
+	"strings"
 	"strconv"
 )
 
@@ -39,7 +39,7 @@ func load_csv (load_csv_to interface{}, fname, prefix string) {
 		csvHeadersMap[num]=i
 	}
 
-	// Создание d csvField соответствия столбец файла - поле структуры
+	// Создание в csvField соответствия столбец файла - поле структуры
 	for i := 0; i < struct_type.NumField(); i++ {
 		if a,ok:= struct_type.Field(i).Tag.Lookup(prefix);ok { // для полей с нужным тегом
 			b,ok:= csvHeadersMap[a]
@@ -78,8 +78,8 @@ func load_csv (load_csv_to interface{}, fname, prefix string) {
 				s,err:=strconv.ParseFloat(line[k.mapNum],32)
 				if err != nil {log.Fatal("Не удалось конвертировать string в ", Tp, " Строка: ", count," Ошибка: ",err)}
 				newItem.Field(k.fldNum).SetFloat(s)
-			case reflect.Slice:
-
+			case reflect.Slice: // Баг: только []string, не []int например, иначе  panic
+				newItem.Field(k.fldNum).Set(reflect.ValueOf(strings.Split(line[k.mapNum],"|")))
 			default:
 				log.Fatal("Не могу преобразовать строку в тип: ", Tp," Не реализовано.")
 			}
