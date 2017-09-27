@@ -12,7 +12,7 @@ import (
 func main() {
 	//parse2("list.csv",[]string{"N","UIN", "Артикул", "Описание", "Количество", "Вес", "Цена"})
 	goods=append(goods, good{Info:1231})
-	goods=append(goods, good{Articul:"1231"})
+	//goods=append(goods, good{Articul:"1231"})
 	start := time.Now()
 	load_csv(&goods,"listtest.csv", "csv")
 	t := time.Now()
