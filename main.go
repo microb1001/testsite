@@ -8,7 +8,6 @@ import (
 "strings"
 "time"
 "./csv"
-	"fmt"
 )
 
 type good struct {
