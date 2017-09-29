@@ -36,10 +36,9 @@ func main() {
 	//sel = []int{1, 2, 3,4,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
 	sel = []int{0,1,2,3,4,5,6,7,8,9,10}
 	mycsv.Load_csv(&goods,"list.csv", "csv")
-	mycsv.Dump(goods)
+	//mycsv.Dump(goods)
 	for i:=range sel {
 		items[i].VendorCode="Q1"
-		fmt.Println(items[i])
 	}
 	items[550].VendorCode="Q1"
 	items[1551].UIN=1
