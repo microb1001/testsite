@@ -1,29 +1,31 @@
 package main
 
 import (
+
 "html/template"
 "log"
 "net/http"
 "strings"
 "time"
+"./csv"
+	"fmt"
 )
 
 type good struct {
 	UIN int `csv:"UIN"`
 	Barcode int
 	VendorCode string `csv:"Артикул"`
-	Brief string `csv:"Артикул"`
+	Brief string `csv:"Описание"`
 	Price int `csv:"Цена"`
-	Quantity int `csv:"Цена"`
+	Quantity int `csv:"Количество"`
 	Available bool `csv:"В продаже"`
-	MainCategory string `csv:"Артикул"`
-	Category []string `csv:"Описание"`
+	MainCategory string `csv:"Категория"`
+	Category []string `csv:"Товар"`
 	Pictures string   `csv:"Артикул"`
-	Articul string   `csv:"Артикул"`
 	Info  int  `csv:"N"`
-	ShortDescription string `csv:"Артикул"`
-	Description string   `csv:"Артикул"`
-	Images string `csv:"Артикул"`
+	ShortDescription string `csv:"Описание"`
+	Description string   `csv:"Характеристика"`
+	Images string
 }
 
 var items [100000]good
@@ -31,13 +33,15 @@ var goods [] good
 var sel []int
 
 func main() {
-	sel = []int{1, 2, 3,7,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
-	load_csv(&goods,"list.csv", "csv")
-	//dump(goods)
+	//sel = []int{1, 2, 3,4,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
+	sel = []int{0,1,2,3,4,5,6,7,8,9,10}
+	mycsv.Load_csv(&goods,"list.csv", "csv")
+	mycsv.Dump(goods)
 	for i:=range sel {
-		items[i].Articul="Q1"
+		items[i].VendorCode="Q1"
+		fmt.Println(items[i])
 	}
-	items[550].Articul="Q1"
+	items[550].VendorCode="Q1"
 	items[1551].UIN=1
 
 
@@ -67,15 +71,21 @@ type Link struct {
 
 // indexHandler is an HTTP handler that serves the index page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	var lst []good
+	var data2 struct{
+		Links []good
+		Title, Body string
+	}
 	var cnt int = 0
-	lst=make([]good,0,120000)
+	data2.Links =make([]good,0,120000)
+	data2.Title= "Image gallery 11-11"
+	data2.Body = "Welcome to the image gallery."
 	start := time.Now()
 
 	data := &Index{
 		Title: "Image gallery 11-11",
 		Body:  "Welcome to the image gallery.",
 	}
+
 	for name, img := range images {
 		data.Links = append(data.Links, Link{
 			URL:   "/image/" + name,
@@ -96,9 +106,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		//
 	} */
 	for _,i := range sel {
-		lst=append(lst,items[i])
+		data2.Links =append(data2.Links,goods[i])
 	}
-	if err := indexTemplate.Execute(w, data); err != nil {
+	if err := indexTemplate.Execute(w, data2); err != nil {
 		log.Println(err)
 	}
 	t := time.Now()
