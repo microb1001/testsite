@@ -8,6 +8,8 @@ import (
 "strings"
 "time"
 "./csv"
+	"fmt"
+	"strconv"
 )
 
 type good struct {
@@ -50,7 +52,7 @@ var sel []int
 
 func main() {
 	//sel = []int{1, 2, 3,4,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
-	sel = []int{0,1,2,3,4,5,6,7,8,9,10}
+	sel = []int{0,1,2,3,4,5,6,7,8,9,10,}
 	mycsv.Load_csv(&goods,"list.csv", "csv")
 	//mycsv.Dump(goods)
 	for i:=range sel {
@@ -63,6 +65,16 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/image/", imageHandler)
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
+}
+
+func minMax(index,min,max int) int{
+	if index<min {
+		return min
+	}
+	if index>max {
+		return max
+	}
+	return index
 }
 
 
@@ -86,6 +98,9 @@ type Link struct {
 
 // indexHandler is an HTTP handler that serves the index page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+
+	const items_per_page=2
+
 	type PagerType struct{
 		Page int
 		Class string
@@ -98,20 +113,31 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Pager []PagerType
 		Title, Body string
 	}
+
+
+	//_=r.ParseForm() // и так вызывается из FormValue
+	fmt.Println("URL.Path: ",r.URL.Path," RawPath: ",r.URL.RawPath," RequestURI():",r.URL.RequestURI(),"Host: ",r.Host,"FormValue: ",r.FormValue("p"))
 	var cnt int = 0
 	data2.Links =make([]good,0,120000)
 	data2.Title= "Image gallery 11-11"
 	data2.Body = "Welcome to the image gallery."
+	var ipage int;
+
+	ipage,err:=strconv.Atoi(r.FormValue("p"))
+	if err != nil {
+		ipage=1
+	}
 	start := time.Now()
 
 	data := &Index{
 		Title: "Image gallery 11-11",
 		Body:  "Welcome to the image gallery.",
 	}
-	for i:=1;i<6;i++{
-		data2.Pager=append(data2.Pager,PagerType{i,"","",false} )
+	maxi:=(len(sel)-1)/items_per_page+1
+	for ii:=minMax(ipage-2,1,maxi);ii<=minMax(ipage+2,1,maxi);ii++{
+		data2.Pager=append(data2.Pager,PagerType{ii,"","?p="+strconv.Itoa(ii),ii==ipage} )
 	}
-	data2.Pager[2].Current=true
+
 	for name, img := range images {
 		data.Links = append(data.Links, Link{
 			URL:   "/image/" + name,
@@ -131,9 +157,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 		//
 	} */
-	for _,i := range sel {
+
+	for _,i := range sel[minMax((ipage-1)*items_per_page,0,len(sel)):minMax(ipage*items_per_page,0,len(sel))] {
 		data2.Links =append(data2.Links,goods[i])
 	}
+	fmt.Println(data2.Links)
 	if err := indexTemplate.Execute(w, data2); err != nil {
 		log.Println(err)
 	}
