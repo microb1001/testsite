@@ -10,6 +10,7 @@ import (
 "./csv"
 	"fmt"
 	"strconv"
+
 )
 
 type good struct {
@@ -27,6 +28,7 @@ type good struct {
 	ShortDescription string `csv:"Описание"`
 	Description string   `csv:"Характеристика"`
 	Images string
+	UrlAlias string
 }
 
 type cart_type struct {
@@ -48,12 +50,19 @@ type user struct {
 }
 var items [100000]good
 var goods [] good
+var goodsmap map[string]int = make(map[string]int, len(goods))
 var sel []int
+
+
+
 
 func main() {
 	//sel = []int{1, 2, 3,4,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
 	sel = []int{0,1,2,3,4,5,6,7,8,9,10,}
 	mycsv.Load_csv(&goods,"list.csv", "csv")
+	for i,k:=range goods {
+	goodsmap[k.VendorCode]=i
+	}
 	//mycsv.Dump(goods)
 	for i:=range sel {
 		items[i].VendorCode="Q1"
@@ -63,7 +72,51 @@ func main() {
 
 
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/image/", imageHandler)
+	http.HandleFunc("/product/", imageHandler)
+	fs := http.FileServer(http.Dir("img/"))
+	http.Handle("/images/", http.StripPrefix("/images/", fs)) // небезопасно отдает файлы любого типа!
+	// This works too, but "/static2/" fragment remains and need to be striped manually
+	//http.HandleFunc("/static2/", func(w http.ResponseWriter, r *http.Request) {
+	//	http.ServeFile(w, r, r.URL.Path[1:])
+	// })
+	//NOTE Serving up a filesystem naively is a potentially dangerous thing (there are potentially ways to break out of the rooted tree) hence I recommend that unless you really know what you're doing, use http.FileServer and http.Dir as they include checks to make sure people can't break out of the FS, which ServeFile doesn't.
+/*  пример управляемой FileServer
+package main
+
+	import (
+		"net/http"
+	"os"
+	)
+
+	type justFilesFilesystem struct {
+		fs http.FileSystem
+	}
+
+	func (fs justFilesFilesystem) Open(name string) (http.File, error) {
+	f, err := fs.fs.Open(name)
+	if err != nil {
+	return nil, err
+	}
+	return neuteredReaddirFile{f}, nil
+	}
+
+	type neuteredReaddirFile struct {
+		http.File
+	}
+
+	func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
+	return nil, nil
+	}
+
+	func main() {
+		fs := justFilesFilesystem{http.Dir("/tmp/")}
+		http.ListenAndServe(":8080", http.FileServer(fs))
+	} */
+
+
+
+
+
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
@@ -108,8 +161,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Current bool
 	}
 
+	type Link2 struct {
+		good
+		URL, Title string
+
+	}
+
 	var data2 struct{
-		Links []good
+		Links []Link2
 		Pager []PagerType
 		Title, Body string
 	}
@@ -118,7 +177,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	//_=r.ParseForm() // и так вызывается из FormValue
 	fmt.Println("URL.Path: ",r.URL.Path," RawPath: ",r.URL.RawPath," RequestURI():",r.URL.RequestURI(),"Host: ",r.Host,"FormValue: ",r.FormValue("p"))
 	var cnt int = 0
-	data2.Links =make([]good,0,120000)
+	data2.Links =make([]Link2,0,120000)
 	data2.Title= "Image gallery 11-11"
 	data2.Body = "Welcome to the image gallery."
 	var ipage int;
@@ -159,9 +218,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	} */
 
 	for _,i := range sel[minMax((ipage-1)*items_per_page,0,len(sel)):minMax(ipage*items_per_page,0,len(sel))] {
-		data2.Links =append(data2.Links,goods[i])
+		data2.Links =append(data2.Links,Link2{goods[i],"/product/"+goods[i].VendorCode,""})
 	}
-	fmt.Println(data2.Links)
 	if err := indexTemplate.Execute(w, data2); err != nil {
 		log.Println(err)
 	}
@@ -182,11 +240,20 @@ type Image struct {
 
 // imageHandler is an HTTP handler that serves the image pages.
 func imageHandler(w http.ResponseWriter, r *http.Request) {
-	data, ok := images[strings.TrimPrefix(r.URL.Path, "/image/")]
+	type datatype struct {
+		good
+		Title string
+		URL   string
+	}
+
+	dataindex, ok := goodsmap[strings.TrimPrefix(r.URL.Path, "/product/")]
+	//data, ok := images[strings.TrimPrefix(r.URL.Path, "/product/")]
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
+	var data datatype=datatype{goods[dataindex],"","/images/"+goods[dataindex].VendorCode+".jpg"}
+
 	if err := imageTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
