@@ -11,7 +11,7 @@
             background: #ddd;
         }
         #sidebar {
-            float: right;
+            float: left;
         }
     </style>
 </head>
@@ -24,6 +24,15 @@
     {{/* The dashes in the following template directives
     ensure the generated HTML of this list contains no
     extraneous spaces or line breaks. */}}
+    <a href="/" class=""><span class="button__text">Назад</span>
+        {{- range .Pager}}
+        {{if .Current}}
+        <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+        {{else}}
+        <a href="/{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+        {{end}}
+        {{- end}}
+    <a href="/" class=""><span class="button__text">Вперед</span>
     <ul>
         {{- range .Links}}
         <li><a href="{{.VendorCode}}">{{.Brief}}</a></li>

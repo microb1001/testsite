@@ -27,6 +27,23 @@ type good struct {
 	Images string
 }
 
+type cart_type struct {
+	VendorCode string
+	Quantity int
+}
+
+type user struct {
+	UID string
+	login string
+	passhash string
+	email string
+	cookie string
+	cart []cart_type
+	shipping_adress1 string
+	shipping_adress2 string
+	shipping_adress3 string
+	payment_info string
+}
 var items [100000]good
 var goods [] good
 var sel []int
@@ -69,8 +86,16 @@ type Link struct {
 
 // indexHandler is an HTTP handler that serves the index page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	type PagerType struct{
+		Page int
+		Class string
+		Url string
+		Current bool
+	}
+
 	var data2 struct{
 		Links []good
+		Pager []PagerType
 		Title, Body string
 	}
 	var cnt int = 0
@@ -83,7 +108,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Title: "Image gallery 11-11",
 		Body:  "Welcome to the image gallery.",
 	}
-
+	for i:=1;i<6;i++{
+		data2.Pager=append(data2.Pager,PagerType{i,"","",false} )
+	}
+	data2.Pager[2].Current=true
 	for name, img := range images {
 		data.Links = append(data.Links, Link{
 			URL:   "/image/" + name,
