@@ -23,6 +23,7 @@ type good struct {
 	Available bool `csv:"В продаже"`
 	MainCategory string `csv:"Категория"`
 	Category []string `csv:"Товар"`
+	Spec map[string]string `csv:"Поиск"`
 	Pictures string   `csv:"Артикул"`
 	Info  int  `csv:"N"`
 	ShortDescription string `csv:"Описание"`
@@ -180,7 +181,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	data2.Links =make([]Link2,0,120000)
 	data2.Title= "Image gallery 11-11"
 	data2.Body = "Welcome to the image gallery."
-	var ipage int;
+	var ipage int
 
 	ipage,err:=strconv.Atoi(r.FormValue("p"))
 	if err != nil {

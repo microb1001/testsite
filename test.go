@@ -13,7 +13,7 @@ type AppConfig struct {
 var t AppConfig = AppConfig{Pg:"143", Redis:"Red"}
 func main2() {
 	GetConfig(&t)
-	//fmt.Println(&config)
+//fmt.Println(&config)
 }
 
 func GetConfig(config interface{}) {

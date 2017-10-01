@@ -80,6 +80,22 @@ func Load_csv (load_csv_to interface{}, fname, prefix string) {
 				newItem.Field(k.fldNum).SetFloat(s)
 			case reflect.Slice: // Баг: только []string, не []int например, иначе  panic
 				newItem.Field(k.fldNum).Set(reflect.ValueOf(strings.Split(line[k.mapNum],"|")))
+			case reflect.Map:
+				// Должен быть map[string]string иначе ошибка
+				//var item string
+				newItem.Field(k.fldNum).Set(reflect.MakeMap(newItem.Field(k.fldNum).Type()))
+				for _,item := range strings.Split(line[k.mapNum],"|") {
+					pair :=strings.SplitN(item,"=",2)
+					fmt.Println(pair)
+					if len(pair)==1 && pair[0]!=""  {
+						log.Fatal("Не удалось конвертировать string в ", Tp, " Строка: ", count," Пара ключ-значение: ",item)
+					}
+					if len(pair)==2 {
+						newItem.Field(k.fldNum).SetMapIndex(reflect.ValueOf(pair[0]),reflect.ValueOf(pair[1]))
+					}
+
+				}
+
 			default:
 				log.Fatal("Не могу преобразовать строку в тип: ", Tp," Не реализовано.")
 			}

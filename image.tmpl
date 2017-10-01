@@ -1,6 +1,16 @@
 {{define "content"}}
 <div id="image">
     <img src="{{.URL}}" title="{{.Title}}" alt="{{.Title}}">
+    <h2 class="title title_size_22 n-product-spec-wrap__title">Подробные характеристики</h2>
+    <div class="n-product-spec-wrap__body">
+        <dl class="n-product-spec">
+            {{- range .Spec}}
+            <dt class="n-product-spec__name"><span class="n-product-spec__name-inner">{{.}}</span></dt>
+            <dd class="n-product-spec__value"><span class="n-product-spec__value-inner">LGA1151</span></dd>
+            {{- end}}
+        </dl>
+
+    </div>
 </div>
 {{end}}
 
