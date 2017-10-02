@@ -4,9 +4,9 @@
     <h2 class="title title_size_22 n-product-spec-wrap__title">Подробные характеристики</h2>
     <div class="n-product-spec-wrap__body">
         <dl class="n-product-spec">
-            {{- range .Spec}}
-            <dt class="n-product-spec__name"><span class="n-product-spec__name-inner">{{.}}</span></dt>
-            <dd class="n-product-spec__value"><span class="n-product-spec__value-inner">LGA1151</span></dd>
+            {{- range .Spec1}}
+            <dt class="n-product-spec__name"><span class="n-product-spec__name-inner">{{.Key}}</span></dt>
+            <dd class="n-product-spec__value"><span class="n-product-spec__value-inner">{{.Value}}</span></dd>
             {{- end}}
         </dl>
 
