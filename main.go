@@ -1,16 +1,14 @@
 package main
 
 import (
-
 "html/template"
 "log"
 "net/http"
 "strings"
 "time"
 "./csv"
-	"fmt"
-	"strconv"
-
+"fmt"
+"strconv"
 )
 
 type good struct {
@@ -22,14 +20,14 @@ type good struct {
 	Quantity int `csv:"Количество"`
 	Available bool `csv:"В продаже"`
 	MainCategory string `csv:"Категория"`
-	Category []string `csv:"Товар"`
+	Category string `csv:"Товар"`
 	Spec map[string]string `csv:"Поиск"`
 	Pictures string   `csv:"Артикул"`
 	Info  int  `csv:"N"`
 	ShortDescription string `csv:"Описание"`
 	Description string   `csv:"Характеристика"`
 	Images string
-	UrlAlias string
+	UrlAlias string `csv:"Path"`
 }
 
 type cart_type struct {
@@ -49,75 +47,32 @@ type user struct {
 	shipping_adress3 string
 	payment_info string
 }
-var items [100000]good
-var goods [] good
+
+type PagerType struct{
+	Page int
+	Class string
+	Url string
+	Current bool
+}
+
+const items_per_page=2
+var goods []good
 var goodsmap map[string]int = make(map[string]int, len(goods))
-var sel []int
-
-
-
+var sel map[string][]int = make(map[string][]int,50)
 
 func main() {
-	//sel = []int{1, 2, 3,4,200,280,600,860,5,1100,444,555,556,667,668,669,4,6,8,888}
-	sel = []int{0,1,2,3,4,5,6,7,8,9,10,}
 	mycsv.Load_csv(&goods,"list.csv", "csv")
+	sel["/"] = []int{0,1,2,3,4,5,6,7,8,9,10,}
 	for i,k:=range goods {
 	goodsmap[k.VendorCode]=i
+	sel[k.UrlAlias]=append(sel[k.UrlAlias],i)
 	}
 	//mycsv.Dump(goods)
-	for i:=range sel {
-		items[i].VendorCode="Q1"
-	}
-	items[550].VendorCode="Q1"
-	items[1551].UIN=1
 
-
-	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
 	fs := http.FileServer(http.Dir("img/"))
 	http.Handle("/images/", http.StripPrefix("/images/", fs)) // небезопасно отдает файлы любого типа!
-	// This works too, but "/static2/" fragment remains and need to be striped manually
-	//http.HandleFunc("/static2/", func(w http.ResponseWriter, r *http.Request) {
-	//	http.ServeFile(w, r, r.URL.Path[1:])
-	// })
-	//NOTE Serving up a filesystem naively is a potentially dangerous thing (there are potentially ways to break out of the rooted tree) hence I recommend that unless you really know what you're doing, use http.FileServer and http.Dir as they include checks to make sure people can't break out of the FS, which ServeFile doesn't.
-/*  пример управляемой FileServer
-package main
-
-	import (
-		"net/http"
-	"os"
-	)
-
-	type justFilesFilesystem struct {
-		fs http.FileSystem
-	}
-
-	func (fs justFilesFilesystem) Open(name string) (http.File, error) {
-	f, err := fs.fs.Open(name)
-	if err != nil {
-	return nil, err
-	}
-	return neuteredReaddirFile{f}, nil
-	}
-
-	type neuteredReaddirFile struct {
-		http.File
-	}
-
-	func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
-	return nil, nil
-	}
-
-	func main() {
-		fs := justFilesFilesystem{http.Dir("/tmp/")}
-		http.ListenAndServe(":8080", http.FileServer(fs))
-	} */
-
-
-
-
-
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
@@ -131,79 +86,53 @@ func minMax(index,min,max int) int{
 	return index
 }
 
-
-
-// indexTemplate is the main site template.
 // The default template includes two template blocks ("sidebar" and "content")
 // that may be replaced in templates derived from this one.
-var indexTemplate = template.Must(template.ParseFiles("index.tmpl"))
+var mainTemplate = template.Must(template.ParseFiles("index.tmpl"))
 
-// Index is a data structure used to populate an indexTemplate.
-type Index struct {
-	Title string
-	Body  string
-	Links []Link
-}
+// mainHandler is an HTTP handler that serves the index page (list of goods).
+func mainHandler(w http.ResponseWriter, r *http.Request) {
 
-type Link struct {
-	URL, Title string
-}
-
-
-// indexHandler is an HTTP handler that serves the index page.
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-
-	const items_per_page=2
-
-	type PagerType struct{
-		Page int
-		Class string
-		Url string
-		Current bool
-	}
-
-	type Link2 struct {
-		good
-		URL, Title string
-
-	}
-
-	var data2 struct{
-		Links []Link2
-		Pager []PagerType
-		Title, Body string
-	}
-
-
-	//_=r.ParseForm() // и так вызывается из FormValue
-	fmt.Println("URL.Path: ",r.URL.Path," RawPath: ",r.URL.RawPath," RequestURI():",r.URL.RequestURI(),"Host: ",r.Host,"FormValue: ",r.FormValue("p"))
-	var cnt int = 0
-	data2.Links =make([]Link2,0,120000)
-	data2.Title= "Image gallery 11-11"
-	data2.Body = "Welcome to the image gallery."
-	var ipage int
-
-	ipage,err:=strconv.Atoi(r.FormValue("p"))
-	if err != nil {
-		ipage=1
-	}
 	start := time.Now()
 
-	data := &Index{
-		Title: "Image gallery 11-11",
-		Body:  "Welcome to the image gallery.",
-	}
-	maxi:=(len(sel)-1)/items_per_page+1
-	for ii:=minMax(ipage-2,1,maxi);ii<=minMax(ipage+2,1,maxi);ii++{
-		data2.Pager=append(data2.Pager,PagerType{ii,"","?p="+strconv.Itoa(ii),ii==ipage} )
+	type LinkType struct {
+		good
+		URL, Title string
 	}
 
-	for name, img := range images {
-		data.Links = append(data.Links, Link{
-			URL:   "/image/" + name,
-			Title: img.Title,
-		})
+	var data struct{
+		Title, Body string
+		Links []LinkType
+		Pager []PagerType
+		Timer time.Duration //Timer
 	}
+
+	//_=r.ParseForm() // Само вызывается из FormValue
+	fmt.Println("URL.Path: ",r.URL.Path," RawPath: ",r.URL.RawPath," RequestURI():",r.URL.RequestURI(),"Host: ",r.Host,"FormValue: ",r.FormValue("p"))
+
+	var cnt int = 0
+	var pageCurrent int
+	var mainPage string
+
+	data.Links =make([]LinkType,0,items_per_page)
+	data.Title= "Image gallery 11-11"
+	data.Body = "Welcome to the image gallery."
+	mainPage = "/kuvshin"
+	pageCurrent,err:=strconv.Atoi(r.FormValue("p"))
+	if err != nil {
+		pageCurrent = 0
+	}
+	pageMax :=(len(sel[mainPage])-1)/items_per_page // начинается с нуля
+	for ii:=minMax(pageCurrent-2,0, pageMax);ii<=minMax(pageCurrent+2,0, pageMax);ii++{
+		data.Pager=append(data.Pager,PagerType{ii+1,"","?p="+strconv.Itoa(ii),ii == pageCurrent} )
+	}
+
+//	for name, img := range images {
+//		data.Links = append(data.Links, Link{
+//			URL:   "/image/" + name,
+//			Title: img.Title,
+//		})
+//	}
 	/*for _,item := range items {
 		if item.UIN==1 {
 			cnt=cnt+1
@@ -218,10 +147,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		//
 	} */
 
-	for _,i := range sel[minMax((ipage-1)*items_per_page,0,len(sel)):minMax(ipage*items_per_page,0,len(sel))] {
-		data2.Links =append(data2.Links,Link2{goods[i],"/product/"+goods[i].VendorCode,""})
+	data.Timer=time.Now().Sub(start)
+	for _,i := range sel[mainPage][minMax((pageCurrent)*items_per_page,0,len(sel[mainPage])):minMax((pageCurrent+1)*items_per_page,0,len(sel[mainPage]))] {
+			data.Links =append(data.Links, LinkType{goods[i],"/product/"+goods[i].VendorCode,""})
 	}
-	if err := indexTemplate.Execute(w, data2); err != nil {
+	if err := mainTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
 	t := time.Now()
@@ -229,11 +159,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("timer ",cnt, elapsed)
 }
 
-// imageTemplate is a clone of indexTemplate that provides
+// imageTempl9ate is a clone of indexTemp9late that provides
 // alternate "sidebar" and "content" templates.
-var imageTemplate = template.Must(template.Must(indexTemplate.Clone()).ParseFiles("image.tmpl"))
+var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
 
-// Image is a data structure used to populate an imageTemplate.
+// Image is a data structure used to populate an imageTemp9late.
 type Image struct {
 	Title string
 	URL   string
@@ -241,8 +171,14 @@ type Image struct {
 
 // imageHandler is an HTTP handler that serves the image pages.
 func imageHandler(w http.ResponseWriter, r *http.Request) {
+
+	type spec1type struct {
+		Key, Value string
+	}
+
 	type datatype struct {
 		good
+		Spec1 []spec1type
 		Title string
 		URL   string
 	}
@@ -253,7 +189,13 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	var data datatype=datatype{goods[dataindex],"","/images/"+goods[dataindex].VendorCode+".jpg"}
+	var data datatype=datatype{goods[dataindex],
+	[]spec1type{},"","/images/"+goods[dataindex].VendorCode+".jpg"}
+	for _,item3 := range []string{"Высота","Ширина","Диаметр","Размер"} {
+	if data.Spec[item3]!=""{data.Spec1=append(data.Spec1, spec1type{item3,data.Spec[item3]})
+
+	}
+	}
 
 	if err := imageTemplate.Execute(w, data); err != nil {
 		log.Println(err)

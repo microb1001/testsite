@@ -86,7 +86,6 @@ func Load_csv (load_csv_to interface{}, fname, prefix string) {
 				newItem.Field(k.fldNum).Set(reflect.MakeMap(newItem.Field(k.fldNum).Type()))
 				for _,item := range strings.Split(line[k.mapNum],"|") {
 					pair :=strings.SplitN(item,"=",2)
-					fmt.Println(pair)
 					if len(pair)==1 && pair[0]!=""  {
 						log.Fatal("Не удалось конвертировать string в ", Tp, " Строка: ", count," Пара ключ-значение: ",item)
 					}
