@@ -49,11 +49,17 @@ type user struct {
 	payment_info string
 }
 
-type PagerType struct{
+type PagerElemType struct{
 	Page int
 	Class string
 	Url string
 	Current bool
+}
+
+type PagerType struct{
+	Elem [] PagerElemType
+	Next string
+	Prev string
 }
 
 const items_per_page=2
@@ -150,7 +156,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var data struct{
 		Title, Body string
 		Links []LinkType
-		Pager []PagerType
+		Pager PagerType
 		Cat [] category1listType
 		Timer time.Duration //Timer
 	}
@@ -171,8 +177,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		pageCurrent = 0
 	}
 	pageMax :=(len(sel[mainPage])-1)/items_per_page // начинается с нуля
+	if pageCurrent>0 {data.Pager.Prev=mainPage+"?p="+strconv.Itoa(pageCurrent-1)}
+	if pageCurrent<pageMax {data.Pager.Next=mainPage+"?p="+strconv.Itoa(pageCurrent+1)}
+	fmt.Println(data.Pager.Prev,data.Pager.Next)
 	for ii:=minMax(pageCurrent-2,0, pageMax);ii<=minMax(pageCurrent+2,0, pageMax);ii++{
-		data.Pager=append(data.Pager,PagerType{ii+1,"",mainPage+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
+		data.Pager.Elem=append(data.Pager.Elem,PagerElemType{ii+1,"",mainPage+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
 	}
 
 	for _,i := range sel[mainPage][minMax((pageCurrent)*items_per_page,0,len(sel[mainPage])):minMax((pageCurrent+1)*items_per_page,0,len(sel[mainPage]))] {
