@@ -9,6 +9,7 @@ import (
 "./csv"
 "fmt"
 "strconv"
+	"sort"
 )
 
 type good struct {
@@ -60,13 +61,59 @@ var goods []good
 var goodsmap map[string]int = make(map[string]int, len(goods))
 var sel map[string][]int = make(map[string][]int,50)
 
+type e struct{
+	name,url string
+	elem []string
+}
+var category1e []e = []e{
+	e{"/stolovoe-serebro","Столовое серебро",[]string{}},
+	e{"/ukrashenia","Украшения",[]string{}},
+	e{"/zoloto","Золото",[]string{}},
+	e{"/prochee","Прочее",[]string{}},
+	}
+var category1 map[string]map[string]string = make(map[string]map[string]string,50)
+var category2 map[string]string = make(map[string]string,50)
+type  category1listType struct{	Key string; Value [] struct{ Key, Url string}}
+var category1list [] category1listType
+var category2list [] struct{key, value string}
+
 func main() {
 	mycsv.Load_csv(&goods,"list.csv", "csv")
 	sel["/"] = []int{0,1,2,3,4,5,6,7,8,9,10,}
 	for i,k:=range goods {
 	goodsmap[k.VendorCode]=i
 	sel[k.UrlAlias]=append(sel[k.UrlAlias],i)
+
+	if category1[k.MainCategory]==nil {
+		category1[k.MainCategory]=make(map[string]string,50)
 	}
+	category1[k.MainCategory][k.Category]=k.UrlAlias
+
+	if category2[k.Category]=="" {
+		category2[k.Category]=k.UrlAlias
+	}
+	}
+	for f,g:= range category1 {
+		var tp category1listType
+		tp.Key =f
+		for k,m:= range g {
+			tp.Value =append(tp.Value,struct{Key, Url string}{k,m})
+		}
+
+		category1list=append(category1list,tp)
+		sort.Slice(tp.Value, func(i, j int) bool { return tp.Value[i].Key < tp.Value[j].Key })
+	}
+	sort.Slice(category1list, func(i, j int) bool { return len(category1list[i].Value) > len(category1list[j].Value) }) // по количеству товаров
+
+	for k,m:= range category2 {
+		category2list=append(category2list,struct{key, value string}{k,m})
+
+	}
+	sort.Slice(category2list, func(i, j int) bool { return category2list[i].key < category2list[j].key })
+
+	//fmt.Println(category1,"----",category2,"tt ")
+	fmt.Println(category1list)
+	fmt.Println(category2list)
 	//mycsv.Dump(goods)
 
 	http.HandleFunc("/", mainHandler)
@@ -104,6 +151,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		Title, Body string
 		Links []LinkType
 		Pager []PagerType
+		Cat [] category1listType
 		Timer time.Duration //Timer
 	}
 
@@ -117,40 +165,21 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	data.Links =make([]LinkType,0,items_per_page)
 	data.Title= "Image gallery 11-11"
 	data.Body = "Welcome to the image gallery."
-	mainPage = "/kuvshin"
+	mainPage=r.URL.Path // !!Нужна обработка пользовательского ввода!!
 	pageCurrent,err:=strconv.Atoi(r.FormValue("p"))
 	if err != nil {
 		pageCurrent = 0
 	}
 	pageMax :=(len(sel[mainPage])-1)/items_per_page // начинается с нуля
 	for ii:=minMax(pageCurrent-2,0, pageMax);ii<=minMax(pageCurrent+2,0, pageMax);ii++{
-		data.Pager=append(data.Pager,PagerType{ii+1,"","?p="+strconv.Itoa(ii),ii == pageCurrent} )
+		data.Pager=append(data.Pager,PagerType{ii+1,"",mainPage+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
 	}
 
-//	for name, img := range images {
-//		data.Links = append(data.Links, Link{
-//			URL:   "/image/" + name,
-//			Title: img.Title,
-//		})
-//	}
-	/*for _,item := range items {
-		if item.UIN==1 {
-			cnt=cnt+1
-			lst=append(lst,item)
-		}
-		if item.Articul=="Q1" {
-			cnt=cnt+1
-			lst=append(lst,item)
-		}
-		//lst=append(lst,item)
-
-		//
-	} */
-
-	data.Timer=time.Now().Sub(start)
 	for _,i := range sel[mainPage][minMax((pageCurrent)*items_per_page,0,len(sel[mainPage])):minMax((pageCurrent+1)*items_per_page,0,len(sel[mainPage]))] {
 			data.Links =append(data.Links, LinkType{goods[i],"/product/"+goods[i].VendorCode,""})
 	}
+	data.Cat=category1list
+	data.Timer=time.Now().Sub(start)
 	if err := mainTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
@@ -202,9 +231,3 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// images specifies the site content: a collection of images.   https://lenta.ru/
-var images = map[string]*Image{
-	"go":     {"The Go Gopher", "https://golang.org/doc/gopher/frontpage.png"},
-	"google": {"The Google Logo", "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"},
-	"lenta": {"The Lenta Logo", "https://icdn.lenta.ru/images/2017/09/20/18/20170920184345749/pic_9236d1c3d84b722a85fe66166a0ef251.jpg"},
-}

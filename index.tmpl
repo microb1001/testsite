@@ -20,16 +20,25 @@
 
 <div id="sidebar">
     {{block "sidebar" .}}
+    {{- range .Cat}}
+    <ul>
+        {{.Key}}
+        {{- range .Value}}
+        <li><a href="{{.Url}}">{{.Key}}</a></li>
+        {{- end}}
+    </ul>
+    {{- end}}
     <h2>Links</h2>
+
     {{/* The dashes in the following template directives
     ensure the generated HTML of this list contains no
     extraneous spaces or line breaks. */}}
-    <a href="/" class=""><span class="button__text">Назад</span>
+    <a href="/" class=""><span class="button__text">Назад</span></a>
         {{- range .Pager}}
         {{if .Current}}
         <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
         {{else}}
-        <a href="/{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+        <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
         {{end}}
         {{- end}}
     <a href="/" class=""><span class="button__text">Вперед</span></a>
@@ -43,7 +52,22 @@
 
 {{block "content" .}}
 <div id="content">
-    {{.Body}}
+    {{.Body}}{{.Timer}}
+    <a href="/" class=""><span class="button__text">Назад</span></a>
+    {{- range .Pager}}
+    {{if .Current}}
+    <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+    {{else}}
+    <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+    {{end}}
+    {{- end}}
+    <a href="/" class=""><span class="button__text">Вперед</span></a>
+    <ul>
+        {{- range .Links}}
+        <li><a href="{{.URL}}">{{.Brief}}</a></li>
+        {{- end}}
+    </ul>
+
 </div>
 {{end}}
 </body>

@@ -2,6 +2,7 @@
 <div id="image">
     <img src="{{.URL}}" title="{{.Title}}" alt="{{.Title}}">
     <h2 class="title title_size_22 n-product-spec-wrap__title">Подробные характеристики</h2>
+    <span class="n-product-spec__desc">{{.Description}}</span>
     <div class="n-product-spec-wrap__body">
         <dl class="n-product-spec">
             {{- range .Spec1}}
