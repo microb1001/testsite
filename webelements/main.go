@@ -27,11 +27,14 @@ func MinMax(index,min,max int) int{
 	return index
 }
 
-func Pager (PageMin, pageMax, pageCurrent int, UrlPart string) (newP PagerType) {
-	if pageCurrent>PageMin {newP.Prev=UrlPart+"?p="+strconv.Itoa(pageCurrent-1)}
-	if pageCurrent<pageMax {newP.Next=UrlPart+"?p="+strconv.Itoa(pageCurrent+1)}
-	for ii:=MinMax(pageCurrent-2,0, pageMax);ii<=MinMax(pageCurrent+2,0, pageMax);ii++{
-		newP.Elem=append(newP.Elem,PagerElemType{ii+1,"",UrlPart+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
+func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,i,j int) {
+	maxPage :=(itemsCnt-1)/ items_per_page // начинается с нуля
+	if Page > 0 {newP.Prev= urlPart +"p="+strconv.Itoa(Page-1)}
+	if Page < maxPage {newP.Next= urlPart +"p="+strconv.Itoa(Page+1)}
+	for ii:=MinMax(Page-2,0, maxPage);ii<=MinMax(Page+2,0, maxPage);ii++{
+		newP.Elem=append(newP.Elem,PagerElemType{ii+1,"", urlPart +"p="+strconv.Itoa(ii),ii == Page} )
 	}
+	i=MinMax((Page)*items_per_page,0, itemsCnt)
+	j=MinMax((Page+1)*items_per_page,0, itemsCnt)
 	return
 }
