@@ -117,15 +117,7 @@ func main() {
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
-func minMax(index,min,max int) int{
-	if index<min {
-		return min
-	}
-	if index>max {
-		return max
-	}
-	return index
-}
+
 
 // The default template includes two template blocks ("sidebar" and "content")
 // that may be replaced in templates derived from this one.
@@ -165,16 +157,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		pageCurrent = 0
 	}
 	pageMax :=(len(sel[mainPage])-1)/items_per_page // начинается с нуля
-	if pageCurrent>0 {data.Pager.Prev=mainPage+"?p="+strconv.Itoa(pageCurrent-1)}
-	if pageCurrent<pageMax {data.Pager.Next=mainPage+"?p="+strconv.Itoa(pageCurrent+1)}
-	fmt.Println(data.Pager.Prev,data.Pager.Next)
-	for ii:=minMax(pageCurrent-2,0, pageMax);ii<=minMax(pageCurrent+2,0, pageMax);ii++{
-		data.Pager.Elem=append(data.Pager.Elem,webelements.PagerElemType{ii+1,"",mainPage+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
+	data.Pager=webelements.Pager(0, pageMax,pageCurrent,mainPage)
+	for _,i := range sel[mainPage][webelements.MinMax((pageCurrent)*items_per_page,0,len(sel[mainPage])):webelements.MinMax((pageCurrent+1)*items_per_page,0,len(sel[mainPage]))] {
+		data.Links = append(data.Links, LinkType{goods[i], "/product/" + goods[i].VendorCode, ""})
 	}
 
-	for _,i := range sel[mainPage][minMax((pageCurrent)*items_per_page,0,len(sel[mainPage])):minMax((pageCurrent+1)*items_per_page,0,len(sel[mainPage]))] {
-			data.Links =append(data.Links, LinkType{goods[i],"/product/"+goods[i].VendorCode,""})
-	}
 	data.Cat=category1list
 	data.Timer=time.Now().Sub(start)
 	if err := mainTemplate.Execute(w, data); err != nil {
