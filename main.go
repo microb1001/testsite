@@ -9,7 +9,8 @@ import (
 "./csv"
 "fmt"
 "strconv"
-	"sort"
+"sort"
+"./webelements"
 )
 
 type good struct {
@@ -47,19 +48,6 @@ type user struct {
 	shipping_adress2 string
 	shipping_adress3 string
 	payment_info string
-}
-
-type PagerElemType struct{
-	Page int
-	Class string
-	Url string
-	Current bool
-}
-
-type PagerType struct{
-	Elem [] PagerElemType
-	Next string
-	Prev string
 }
 
 const items_per_page=2
@@ -156,7 +144,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var data struct{
 		Title, Body string
 		Links []LinkType
-		Pager PagerType
+		Pager webelements.PagerType
 		Cat [] category1listType
 		Timer time.Duration //Timer
 	}
@@ -181,7 +169,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	if pageCurrent<pageMax {data.Pager.Next=mainPage+"?p="+strconv.Itoa(pageCurrent+1)}
 	fmt.Println(data.Pager.Prev,data.Pager.Next)
 	for ii:=minMax(pageCurrent-2,0, pageMax);ii<=minMax(pageCurrent+2,0, pageMax);ii++{
-		data.Pager.Elem=append(data.Pager.Elem,PagerElemType{ii+1,"",mainPage+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
+		data.Pager.Elem=append(data.Pager.Elem,webelements.PagerElemType{ii+1,"",mainPage+"?p="+strconv.Itoa(ii),ii == pageCurrent} )
 	}
 
 	for _,i := range sel[mainPage][minMax((pageCurrent)*items_per_page,0,len(sel[mainPage])):minMax((pageCurrent+1)*items_per_page,0,len(sel[mainPage]))] {
