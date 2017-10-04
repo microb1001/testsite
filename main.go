@@ -15,33 +15,32 @@ import (
 const items_per_page=2
 var goods mydb.Goods
 
-
-
-
-
 func main() {
 	goods.Init("list.csv")
-	goods.Sel["/"] = []int{0,1,2,3,4,5,6,7,8,9,10,}
-
+	goods.AddPrice("")
 	//mycsv.Dump(goods)
 
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
+
 	fs := http.FileServer(http.Dir("img/"))
 	http.Handle("/images/", http.StripPrefix("/images/", fs)) // небезопасно отдает файлы любого типа!
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
-
-
 // The default template includes two template blocks ("sidebar" and "content")
 // that may be replaced in templates derived from this one.
 var mainTemplate = template.Must(template.ParseFiles("index.tmpl"))
+// image Template is a clone of index Template that provides
+// alternate "sidebar" and "content" templates.
+var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
 
 // mainHandler is an HTTP handler that serves the index page (list of goods).
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	start := time.Now()
+	goods.Mu.RLock()
+	defer goods.Mu.RUnlock()
 
 	type LinkType struct {
 		mydb.Good
@@ -88,9 +87,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("timer ",cnt, elapsed)
 }
 
-// imageTempl9ate is a clone of indexTemp9late that provides
-// alternate "sidebar" and "content" templates.
-var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
+
+
 
 // Image is a data structure used to populate an imageTemp9late.
 type Image struct {

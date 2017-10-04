@@ -4,6 +4,7 @@ import (
 	"../csv"
 	"sort"
 	"fmt"
+	"sync"
 )
 type Good struct {
 	UIN int `csv:"UIN"`
@@ -25,7 +26,9 @@ type Good struct {
 }
 
 type Goods struct {
+	Mu            sync.RWMutex
 	O             []Good
+
 	Goodsmap      map[string]int
 	Sel           map[string][]int
 	category1     map[string]map[string]string
@@ -68,12 +71,14 @@ var category1e []e = []e{
 
 
 func (s *Goods) Init (filename string){
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
 	mycsv.Load_csv(&s.O, filename, "csv")
 	s.Goodsmap = make(map[string]int, len(s.O))
 	s.Sel= make(map[string][]int,50)
 	s.category1 = make(map[string]map[string]string,50)
 	s.category2 = make(map[string]string,50)
-
+	s.Sel["/"] = []int{0,1,2,3,4,5,6,7,8,9,10,}
 	for i,k:=range s.O {
 		s.Goodsmap[k.VendorCode]=i
 		s.Sel[k.UrlAlias]=append(s.Sel[k.UrlAlias],i)
@@ -108,4 +113,9 @@ func (s *Goods) Init (filename string){
 	//fmt.Println(category1,"----",category2,"tt ")
 	fmt.Println(s.Category1list)
 	fmt.Println(s.category2list)
+
+}
+func (s *Goods) AddPrice (filename string){
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
 }
