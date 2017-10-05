@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type PagerElemType struct{
@@ -51,9 +52,18 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	}
 
 	func (mfs MyWebFilesystem) Open(name string) (http.File, error) {
+
 	f, err := mfs.fs.Open(name)
 	if err != nil {
 	return nil, err
+	}
+		name1:=strings.Split(name,".")
+		if (len(name1)!=2) || (1==1) {
+			return nil,os.ErrPermission
+		}
+	stat, err := f.Stat()
+	if stat.IsDir() {
+		return nil, os.ErrNotExist
 	}
 	return neuteredReaddirFile{f}, nil
 	}
