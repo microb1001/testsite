@@ -52,15 +52,19 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	}
 
 	func (mfs MyWebFilesystem) Open(name string) (http.File, error) {
-
-	f, err := mfs.fs.Open(name)
-	if err != nil {
-	return nil, err
-	}
 		name1:=strings.Split(name,".")
-		if (len(name1)!=2) || (1==1) {
+		if (len(name1)!=2) || (name1[1]!="jpg" && name1[1]!="csv" && name1[1]!="js" && name1[1]!="png") {
 			return nil,os.ErrPermission
 		}
+		name2:=strings.Split(name1[0],"/")
+		if (len(name2)>2) {
+			return nil,os.ErrPermission
+		}
+	f, err := mfs.fs.Open(name2[0]+"."+name1[1])
+	if err != nil {
+		return nil, err
+	}
+
 	stat, err := f.Stat()
 	if stat.IsDir() {
 		return nil, os.ErrNotExist
