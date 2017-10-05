@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"fmt"
 )
 
 type PagerElemType struct{
@@ -48,25 +49,33 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	) */
 
 	type MyWebFilesystem struct {
-		fs http.FileSystem
+		http.FileSystem
 	}
 
 	func (mfs MyWebFilesystem) Open(name string) (http.File, error) {
 		name1:=strings.Split(name,".")
+		fmt.Println(name1)
 		if (len(name1)!=2) || (name1[1]!="jpg" && name1[1]!="csv" && name1[1]!="js" && name1[1]!="png") {
+			fmt.Println("e0")
 			return nil,os.ErrPermission
 		}
 		name2:=strings.Split(name1[0],"/")
 		if (len(name2)>2) {
+			fmt.Println("e1")
 			return nil,os.ErrPermission
 		}
-	f, err := mfs.fs.Open(name2[0]+"."+name1[1])
+
+		fmt.Println(name2)
+	f, err := mfs.FileSystem.Open(name1[0]+"."+name1[1])
 	if err != nil {
+		fmt.Println("e2",name1[0]+"."+name1[1])
 		return nil, err
+
 	}
 
 	stat, err := f.Stat()
 	if stat.IsDir() {
+		fmt.Println("e3")
 		return nil, os.ErrNotExist
 	}
 	return neuteredReaddirFile{f}, nil

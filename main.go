@@ -22,9 +22,10 @@ func main() {
 
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
-
-	fs := http.FileServer(http.Dir("img/"))
-	http.Handle("/images/", http.StripPrefix("/images/", fs)) // небезопасно отдает файлы любого типа!
+	fs1 := webelements.MyWebFilesystem{http.Dir("img/")}
+	//http.ListenAndServe(":8080", http.FileServer(fs1))
+	//fs := http.FileServer(http.Dir("img/"))
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer( fs1))) // небезопасно отдает файлы любого типа!
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
