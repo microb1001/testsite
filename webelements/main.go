@@ -6,6 +6,12 @@ import (
 	"os"
 	"strings"
 	"fmt"
+	"log"
+	"image"
+	_ "image/jpeg"
+	"image/png"
+	"image/color"
+	"time"
 )
 
 type PagerElemType struct{
@@ -42,40 +48,98 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	j=MinMax((Page+1)*items_per_page,0, itemsCnt)
 	return
 }
-
-
 /*  пример управляемой FileServer
 почитать здесь https://golang.org/src/net/http/fs.go
 	) */
-
-	type MyWebFilesystem struct {
+	type MyFs struct {
 		http.FileSystem
 	}
 
-	func (mfs MyWebFilesystem) Open(name string) (http.File, error) {
-		name1:=strings.Split(name,".")
-		fmt.Println(name1)
-		if (len(name1)!=2) || (name1[1]!="jpg" && name1[1]!="csv" && name1[1]!="js" && name1[1]!="png") {
-			fmt.Println("e0")
-			return nil,os.ErrPermission
-		}
-		name2:=strings.Split(name1[0],"/")
-		if (len(name2)>2) {
-			fmt.Println("e1")
-			return nil,os.ErrPermission
+	func (mfs MyFs) Open(fname string) (http.File, error) {
+		var name, folder, ext string
+		var f http.File
+
+		Splits :=strings.SplitAfter(fname,".")
+		if len(Splits)==2 && (Splits[1]=="jpg" || Splits[1]=="csv" || Splits[1]=="js" || Splits[1]=="png"){
+			ext= Splits[1]
+		} else {return nil,os.ErrPermission}
+
+		Splits = strings.SplitAfter(Splits[0][1:],"/")
+		if len(Splits)==1 {name=Splits[0]; folder=""
+		} else
+		if len(Splits)==2 {name=Splits[1]; folder=Splits[0]
+		} else {return nil,os.ErrPermission}
+
+		nm:= "/"+folder+name+ext
+		f, err := mfs.FileSystem.Open(nm)
+
+		if err != nil && folder=="pre/"{
+			start := time.Now()
+			f, err = mfs.FileSystem.Open("/1"+name+ext)
+			reader, err1 := mfs.FileSystem.Open("/"+name+ext) // здесь нужен ремайзинг
+			if err1 != nil {
+			    log.Fatal(err1,"e1")
+			 }
+			defer reader.Close()
+			//var teal color.Color = color.RGBA{0, 200, 200, 255}
+		//	var red  color.Color = color.RGBA{200, 30, 30, 255}
+			var m image.Image
+			m, _, err1 = image.Decode(reader)
+			if err1 != nil {
+				log.Fatal(err1)
+			}
+
+
+			file, err := os.Create("someimage.png")
+
+			if err != nil {
+				fmt.Errorf("%s", err)
+			}
+			img := image.NewRGBA64(image.Rect(0, 0, 270, 270))
+						//draw.Draw(img, img.Bounds(), &image.Uniform{teal}, image.ZP, draw.Src)
+			//draw.Draw(img, img.Bounds(), m, image.ZP, draw.Src)
+			var stepX,stepY float32
+			stepX=float32(m.Bounds().Dx())/float32(img.Bounds().Dx())
+			stepY=float32(m.Bounds().Dy())/float32(img.Bounds().Dy())
+			for x:= img.Bounds().Min.X;x<img.Bounds().Max.X;x++{
+				for y:= img.Bounds().Min.Y;y<img.Bounds().Max.Y;y++{
+					var cnt uint32 =0
+					var R,G,B,A uint32 =0,0,0,0
+					for mx:= int(float32(x)*stepX);mx<int(float32(x+1)*stepX);mx++{
+						for my:= int(float32(y)*stepY);my<int(float32(y+1)*stepY);my++{
+							cnt++
+							R1,G1,B1,A1:=m.At(mx,my).RGBA()
+							//fmt.Println(R1,G1,B1,A1,cnt)
+							R+=R1;G+=G1;B+=B1;A+=A1;
+						}
+					}
+					//fmt.Println(R/cnt,G/cnt,B/cnt,A/cnt,cnt)
+					img.SetRGBA64(x,y,color.RGBA64{uint16(R/cnt),uint16(G/cnt),uint16(B/cnt),uint16(A/cnt)})
+					//x2:=int(float32(x)*stepX)
+					//y2:=int(float32(y)*stepY)
+					//img.Set(x,y,m.At(x2,y2))
+				}
+			}
+
+			//for x := 20; x < 380; x++ {
+			//	y := x/3 + 15
+			//	img.Set(x, y, red)
+//
+			//}
+			png.Encode(file, img)
+			file.Close()
+			t := time.Now()
+			elapsed := t.Sub(start)
+			log.Println("timer ==", elapsed)
+
 		}
 
-		fmt.Println(name2)
-	f, err := mfs.FileSystem.Open(name1[0]+"."+name1[1])
 	if err != nil {
-		fmt.Println("e2",name1[0]+"."+name1[1])
 		return nil, err
-
 	}
 
 	stat, err := f.Stat()
 	if stat.IsDir() {
-		fmt.Println("e3")
 		return nil, os.ErrNotExist
 	}
 	return neuteredReaddirFile{f}, nil
