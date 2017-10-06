@@ -9,9 +9,11 @@ import (
 	"log"
 	"image"
 	_ "image/jpeg"
-	"image/png"
+	//"image/png"
 	"image/color"
 	"time"
+	"image/jpeg"
+
 )
 
 type PagerElemType struct{
@@ -74,64 +76,12 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 		f, err := mfs.FileSystem.Open(nm)
 
 		if err != nil && folder=="pre/"{
-			start := time.Now()
-			f, err = mfs.FileSystem.Open("/1"+name+ext)
-			reader, err1 := mfs.FileSystem.Open("/"+name+ext) // здесь нужен ремайзинг
-			if err1 != nil {
-			    log.Fatal(err1,"e1")
-			 }
-			defer reader.Close()
-			//var teal color.Color = color.RGBA{0, 200, 200, 255}
-		//	var red  color.Color = color.RGBA{200, 30, 30, 255}
-			var m image.Image
-			m, _, err1 = image.Decode(reader)
-			if err1 != nil {
-				log.Fatal(err1)
-			}
-
-
-			file, err := os.Create("someimage.png")
-
-			if err != nil {
-				fmt.Errorf("%s", err)
-			}
-			img := image.NewRGBA64(image.Rect(0, 0, 270, 270))
-						//draw.Draw(img, img.Bounds(), &image.Uniform{teal}, image.ZP, draw.Src)
-			//draw.Draw(img, img.Bounds(), m, image.ZP, draw.Src)
-			var stepX,stepY float32
-			stepX=float32(m.Bounds().Dx())/float32(img.Bounds().Dx())
-			stepY=float32(m.Bounds().Dy())/float32(img.Bounds().Dy())
-			for x:= img.Bounds().Min.X;x<img.Bounds().Max.X;x++{
-				for y:= img.Bounds().Min.Y;y<img.Bounds().Max.Y;y++{
-					var cnt uint32 =0
-					var R,G,B,A uint32 =0,0,0,0
-					for mx:= int(float32(x)*stepX);mx<int(float32(x+1)*stepX);mx++{
-						for my:= int(float32(y)*stepY);my<int(float32(y+1)*stepY);my++{
-							cnt++
-							R1,G1,B1,A1:=m.At(mx,my).RGBA()
-							//fmt.Println(R1,G1,B1,A1,cnt)
-							R+=R1;G+=G1;B+=B1;A+=A1;
-						}
-					}
-					//fmt.Println(R/cnt,G/cnt,B/cnt,A/cnt,cnt)
-					img.SetRGBA64(x,y,color.RGBA64{uint16(R/cnt),uint16(G/cnt),uint16(B/cnt),uint16(A/cnt)})
-					//x2:=int(float32(x)*stepX)
-					//y2:=int(float32(y)*stepY)
-					//img.Set(x,y,m.At(x2,y2))
-				}
-			}
-
-			//for x := 20; x < 380; x++ {
-			//	y := x/3 + 15
-			//	img.Set(x, y, red)
-//
-			//}
-			png.Encode(file, img)
-			file.Close()
-			t := time.Now()
-			elapsed := t.Sub(start)
-			log.Println("timer ==", elapsed)
-
+			maindir,ok:=mfs.FileSystem.(http.Dir)
+			if !ok {return nil,os.ErrPermission}
+			basedir:=string (maindir)
+			fmt.Println(basedir)
+			thumb(basedir+name+ext,basedir+"pre/"+name+ext,300,300)
+			f, err = mfs.FileSystem.Open("pre/"+name+ext)
 		}
 
 	if err != nil {
@@ -152,6 +102,63 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
 	return nil, nil
 	}
+
+	func thumb (ifile, ofile string, maxWidth, maxHeight int ) error {
+		start := time.Now()
+
+		reader, err1 := os.Open(ifile)
+		if err1 != nil {return err1}
+		defer reader.Close()
+		//var teal color.Color = color.RGBA{0, 200, 200, 255}
+		//	var red  color.Color = color.RGBA{200, 30, 30, 255}
+		var m image.Image
+		m, _, err1 = image.Decode(reader)
+		if err1 != nil {return err1}
+		file, err := os.Create(ofile)
+		if err != nil {	return err1	}
+
+		img := image.NewRGBA64(image.Rect(0, 0, maxWidth, maxHeight))
+		//draw.Draw(img, img.Bounds(), &image.Uniform{teal}, image.ZP, draw.Src)
+
+		var stepX,stepY float32
+		stepX=float32(m.Bounds().Dx())/float32(img.Bounds().Dx())
+		stepY=float32(m.Bounds().Dy())/float32(img.Bounds().Dy())
+		for x:= img.Bounds().Min.X;x<img.Bounds().Max.X;x++{
+			for y:= img.Bounds().Min.Y;y<img.Bounds().Max.Y;y++{
+				var cnt uint32 =0
+				var R,G,B,A uint32 =0,0,0,0
+				for mx:= int(float32(x)*stepX);mx<int(float32(x+1)*stepX);mx++{
+					for my:= int(float32(y)*stepY);my<int(float32(y+1)*stepY);my++{
+						cnt++
+						R1,G1,B1,A1:=m.At(mx,my).RGBA()
+						R+=R1;G+=G1;B+=B1;A+=A1;
+					}
+				}
+				img.SetRGBA64(x,y,color.RGBA64{uint16(R/cnt),uint16(G/cnt),uint16(B/cnt),uint16(A/cnt)})
+			}
+		}
+
+		//png.Encode(file, img)
+		err=jpeg.Encode(file, img,nil)
+		if err != nil {return err1}
+		file.Close()
+		t := time.Now()
+		elapsed := t.Sub(start)
+		log.Println("timer ==", elapsed)
+		return nil
+
+
+
+
+
+
+
+
+
+
+	}
+
+
 /*
 	func main() {
 		fs := justFiles Filesystem{http.Dir("/tmp/")}
@@ -159,6 +166,7 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	}
 
 
+func
 I've settled on the following, which has the added benefit of returning 404 for directories.
 
 
