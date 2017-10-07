@@ -75,13 +75,20 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 		nm:= "/"+folder+name+ext
 		f, err := mfs.FileSystem.Open(nm)
 
-		if err != nil && folder=="pre/"{
-			maindir,ok:=mfs.FileSystem.(http.Dir)
+		if err != nil && (folder=="pre/"||folder=="200/"||folder=="300/"||folder=="400/"){
+			mfsAsDir,ok:=mfs.FileSystem.(http.Dir)
 			if !ok {return nil,os.ErrPermission}
-			basedir:=string (maindir)
-			fmt.Println(basedir)
-			thumb(basedir+name+ext,basedir+"pre/"+name+ext,300,300)
-			f, err = mfs.FileSystem.Open("pre/"+name+ext)
+			basedir:=string (mfsAsDir)
+			imgDim,err8:=strconv.Atoi(folder[0:len(folder)-1]) // Интересная ошибка если здесь err, создается локальная переменная и глобальная err не переписывается, потом ошибка нет файла
+			if err8!=nil{
+				fmt.Println("a1",err8)
+				imgDim=150
+			}
+			fmt.Println("aa",err8)
+			Thumb(basedir+name+ext,basedir+folder+name+ext,imgDim,imgDim) // опасно если folder или name могут содержать что нибудь кроме текста
+
+			f, err = mfs.FileSystem.Open(folder+name+ext)
+
 		}
 
 	if err != nil {
@@ -103,60 +110,70 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	return nil, nil
 	}
 
-	func thumb (ifile, ofile string, maxWidth, maxHeight int ) error {
+	func Thumb(inFile, outFile string, maxWidth, maxHeight int ) error {
 		start := time.Now()
 
-		reader, err1 := os.Open(ifile)
-		if err1 != nil {return err1}
+		reader, err := os.Open(inFile)
+		if err != nil {return err}
 		defer reader.Close()
-		//var teal color.Color = color.RGBA{0, 200, 200, 255}
-		//	var red  color.Color = color.RGBA{200, 30, 30, 255}
-		var m image.Image
-		m, _, err1 = image.Decode(reader)
-		if err1 != nil {return err1}
-		file, err := os.Create(ofile)
-		if err != nil {	return err1	}
+		inImage, tt, err := image.Decode(reader)
+		fmt.Println(tt)
+		if err != nil {return err}
 
-		img := image.NewRGBA64(image.Rect(0, 0, maxWidth, maxHeight))
-		//draw.Draw(img, img.Bounds(), &image.Uniform{teal}, image.ZP, draw.Src)
+		file, err := os.Create(outFile)
+		if err != nil {return err}
+		Height:=inImage.Bounds().Dy()*maxWidth/inImage.Bounds().Dx()
+		Width:=inImage.Bounds().Dx()*maxHeight/inImage.Bounds().Dy()
+		fmt.Println(inImage.Bounds().Dx(),inImage.Bounds().Dy(),Width,Height)
+		if Height>maxHeight {Height=maxHeight}
+		if Width>maxWidth {Width=maxWidth} // Получилось симметрично но странно. Одно лишнее вычисление
+		fmt.Println(inImage.Bounds().Dx(),inImage.Bounds().Dy(),Width,Height,maxWidth, maxHeight)
+
+		if Width>inImage.Bounds().Dx() || Height>inImage.Bounds().Dx() { // Не умеет повышать разрешение!
+			err=jpeg.Encode(file, inImage,nil)
+			if err != nil {return err}
+			file.Close()
+			return nil
+		}
+
+		outImage := image.NewRGBA64(image.Rect(0, 0, Width, Height))
+		//draw.Draw(outImage, outImage.Bounds(), &image.Uniform{teal}, image.ZP, draw.Src) // Водяные знаки!
 
 		var stepX,stepY float32
-		stepX=float32(m.Bounds().Dx())/float32(img.Bounds().Dx())
-		stepY=float32(m.Bounds().Dy())/float32(img.Bounds().Dy())
-		for x:= img.Bounds().Min.X;x<img.Bounds().Max.X;x++{
-			for y:= img.Bounds().Min.Y;y<img.Bounds().Max.Y;y++{
+		stepX=float32(inImage.Bounds().Dx())/float32(outImage.Bounds().Dx())
+		stepY=float32(inImage.Bounds().Dy())/float32(outImage.Bounds().Dy())
+		for x:= outImage.Bounds().Min.X;x< outImage.Bounds().Max.X;x++{
+			for y:= outImage.Bounds().Min.Y;y< outImage.Bounds().Max.Y;y++{
 				var cnt uint32 =0
 				var R,G,B,A uint32 =0,0,0,0
 				for mx:= int(float32(x)*stepX);mx<int(float32(x+1)*stepX);mx++{
 					for my:= int(float32(y)*stepY);my<int(float32(y+1)*stepY);my++{
 						cnt++
-						R1,G1,B1,A1:=m.At(mx,my).RGBA()
+						R1,G1,B1,A1:= inImage.At(mx,my).RGBA()
 						R+=R1;G+=G1;B+=B1;A+=A1;
 					}
 				}
-				img.SetRGBA64(x,y,color.RGBA64{uint16(R/cnt),uint16(G/cnt),uint16(B/cnt),uint16(A/cnt)})
+				outImage.SetRGBA64(x,y,color.RGBA64{uint16(R/cnt),uint16(G/cnt),uint16(B/cnt),uint16(A/cnt)})
 			}
 		}
 
-		//png.Encode(file, img)
-		err=jpeg.Encode(file, img,nil)
-		if err != nil {return err1}
-		file.Close()
+		//png.Encode(file, outImage)
+		err=jpeg.Encode(file, outImage,nil)
+		if err != nil {return err}
+
 		t := time.Now()
 		elapsed := t.Sub(start)
 		log.Println("timer ==", elapsed)
+		log.Println(file.Close())
 		return nil
 
-
-
-
-
-
-
-
-
-
 	}
+type Breadcrumbs_type []struct{
+	Url,Name string
+}
+func Breadcrumbs() Breadcrumbs_type {
+return nil
+}
 
 
 /*
