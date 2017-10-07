@@ -12,7 +12,7 @@ import (
 "./mydb"
 )
 
-const items_per_page=2
+const items_per_page=10
 var goods mydb.Goods
 
 func main() {
@@ -45,7 +45,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	type LinkType struct {
 		mydb.Good
-		URL, Title string
+		URL, Title, Image string
 	}
 
 	var data struct{
@@ -74,7 +74,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var l, h int
 	data.Pager, l, h = webelements.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage+"?")
 	for _,i := range goods.Sel[mainPage][l:h] {
-		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, ""})
+		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "","/images/200/"+ goods.O[i].VendorCode+".jpg"})
 	}
 
 	data.Cat=goods.Category1list

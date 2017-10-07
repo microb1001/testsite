@@ -52,8 +52,14 @@
     {{- end}}
     {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
     <ul>
+        <style> #sidebar-left {padding-top: 30px;} </style>
         {{- range .Links}}
-        <li><a href="{{.URL}}">{{.Brief}}</a></li>
+        <li>
+            <div class="liclass">
+                <a style="text-align:center;" href="{{.URL}}"><img src="{{.Image}}"><br><br>{{.Brief}}</a></div></li>
+
+
+        {{/*<li><a href="{{.URL}}">{{.Brief}}</a></li>*/}}
         {{- end}}
     </ul>
     {{.Timer}}
