@@ -44,22 +44,27 @@ var cartTemplate = template.Must(template.ParseFiles("cart.tmpl"))
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
-	start := time.Now()
-	goods.Mu.RLock()
-	defer goods.Mu.RUnlock()
-
 	type LinkType struct {
 		mydb.Good
 		URL, Title, Image string
 	}
-
 	var data struct{
 		Title, Body string
 		Links []LinkType
 		Pager webelements.PagerType
 		Cat []mydb.Category1listType
 		Timer time.Duration //Timer
+		Session uint64
 	}
+	start := time.Now()
+	//data.Session =webelements.SessionGet(w,r)
+	data.Session=100
+	goods.Mu.RLock()
+	defer goods.Mu.RUnlock()
+
+
+
+
 
 	//_=r.ParseForm() // Само вызывается из FormValue
 	fmt.Println("URL.Path: ",r.URL.Path," RawPath: ",r.URL.RawPath," RequestURI():",r.URL.RequestURI(),"Host: ",r.Host,"FormValue: ",r.FormValue("p"))
@@ -114,6 +119,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		Spec1 []spec1type
 		Title string
 		URL   string
+		Session uint64
 	}
 
 	dataindex, ok := goods.Goodsmap[strings.TrimPrefix(r.URL.Path, "/product/")]
@@ -122,8 +128,9 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
 	var data datatype=datatype{goods.O[dataindex],
-	[]spec1type{},"","/images/"+goods.O[dataindex].VendorCode+".jpg"}
+	[]spec1type{},"","/images/"+goods.O[dataindex].VendorCode+".jpg",webelements.SessionGet(w,r)}
 	for _,item3 := range []string{"Высота","Ширина","Диаметр","Размер"} {
 	if data.Spec[item3]!=""{data.Spec1=append(data.Spec1, spec1type{item3,data.Spec[item3]})
 

@@ -14,8 +14,10 @@ import (
 	"time"
 	"image/jpeg"
 
-	"sync"
+
+	"crypto/rand"
 )
+const COOKIES_NAME="PHPSESSID"
 
 type PagerElemType struct{
 	Page int
@@ -24,29 +26,27 @@ type PagerElemType struct{
 	Current bool
 }
 
-type SessionType struct{
-	User string
-	Id int64
-}
 
-type SessionsType struct {
-	Mu            sync.RWMutex
-	O             map[int64]*SessionType
+func SessionGet (w http.ResponseWriter, r *http.Request) uint64{
+	var id *http.Cookie
+	var res uint64
+	id,err:=r.Cookie(COOKIES_NAME)
+	if err==nil {
+		res,err=strconv.ParseUint(id.Value,10,64)
 	}
-
-func (s *SessionsType) Init (){
-	s.Mu.Lock()
-	defer s.Mu.Unlock()
-	s.O=make(map[int64]*SessionType,0)
-}
-
-func (s *SessionsType) Get (id int64)*SessionType{
-	s.Mu.RLock()
-	defer s.Mu.RUnlock()
-	if s.O[id]==nil {
-		s.O[id]=&SessionType{"",id}
+	if err==nil {
+		return res
 	}
-	return s.O[id]
+	res,err=strconv.ParseUint(r.FormValue(COOKIES_NAME),10,64)
+	if err==nil{
+		return res
+	}
+	rand64 := make([]byte, 8) // генерация случайного числа
+	rand.Read(rand64)
+	for _,i:=range rand64 {res=res*256+uint64(i)}
+	id=&http.Cookie{Name:COOKIES_NAME,Value:strconv.FormatUint(res, 10)}
+	http.SetCookie(w , id)
+	return res
 }
 
 type PagerType struct{

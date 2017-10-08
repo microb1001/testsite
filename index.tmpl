@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>{{.Title}}</title>
+    <title>{{.Title}}{{.Session}}</title>
     <style>
         body {
             font-family: sans-serif;
@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-<h1>{{.Title}}</h1>
+<h1>{{.Title}}  {{.Session}}</h1>
 
 <div id="sidebar">
     {{block "sidebar" .}}
