@@ -14,6 +14,7 @@ import (
 
 const items_per_page=10
 var goods mydb.Goods
+//var Context webelements.SessionListType =
 
 func main() {
 	goods.Init("list.csv")
@@ -40,6 +41,7 @@ var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles
 var cartTemplate = template.Must(template.ParseFiles("cart.tmpl"))
 
 // mainHandler is an HTTP handler that serves the index page (list of goods).
+
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	start := time.Now()

@@ -14,6 +14,7 @@ import (
 	"time"
 	"image/jpeg"
 
+	"sync"
 )
 
 type PagerElemType struct{
@@ -21,6 +22,31 @@ type PagerElemType struct{
 	Class string
 	Url string
 	Current bool
+}
+
+type SessionType struct{
+	User string
+	Id int64
+}
+
+type SessionsType struct {
+	Mu            sync.RWMutex
+	O             map[int64]*SessionType
+	}
+
+func (s *SessionsType) Init (){
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	s.O=make(map[int64]*SessionType,0)
+}
+
+func (s *SessionsType) Get (id int64)*SessionType{
+	s.Mu.RLock()
+	defer s.Mu.RUnlock()
+	if s.O[id]==nil {
+		s.O[id]=&SessionType{"",id}
+	}
+	return s.O[id]
 }
 
 type PagerType struct{
