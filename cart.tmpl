@@ -1,0 +1,20 @@
+{{define "content"}}
+<div id="image">
+    <img src="{{.URL}}" title="{{.Title}}" alt="{{.Title}}">
+    <h2 class="title title_size_22 n-product-spec-wrap__title">Подробные характеристики</h2>
+    <span class="n-product-spec__desc">{{.Description}}</span>
+    <div class="n-product-spec-wrap__body">
+        <dl class="n-product-spec">
+            {{- range .Spec1}}
+            <dt class="n-product-spec__name"><span class="n-product-spec__name-inner">{{.Key}}</span></dt>
+            <dd class="n-product-spec__value"><span class="n-product-spec__value-inner">{{.Value}}</span></dd>
+            {{- end}}
+        </dl>
+
+    </div>
+</div>
+{{end}}
+
+ {{define "sidebar"}}
+<a href="/">Back</a>
+{{end}}
