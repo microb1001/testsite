@@ -22,6 +22,7 @@ func main() {
 
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
+	http.HandleFunc("/cart/", cartHandler)
 	fs1 := webelements.MyFs{http.Dir("img/")}
 	//http.ListenAndServe(":8080", http.FileServer(fs1))
 	//fs := http.FileServer(http.Dir("img/"))
@@ -35,6 +36,8 @@ var mainTemplate = template.Must(template.ParseFiles("index.tmpl"))
 // image Template is a clone of index Template that provides
 // alternate "sidebar" and "content" templates.
 var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
+
+var cartTemplate = template.Must(template.ParseFiles("cart.tmpl"))
 
 // mainHandler is an HTTP handler that serves the index page (list of goods).
 func mainHandler(w http.ResponseWriter, r *http.Request) {
@@ -129,4 +132,13 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 }
-
+func cartHandler(w http.ResponseWriter, r *http.Request) {
+	var data struct{
+		Title, Body string
+	mydb.User_type
+	userCart []mydb.Good
+	}
+	if err := imageTemplate.Execute(w, data); err != nil {
+		log.Println(err)
+	}
+}

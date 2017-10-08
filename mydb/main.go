@@ -40,18 +40,18 @@ type Goods struct {
 type  Category1listType struct{	Key string; Value [] struct{ Key, Url string}}
 
 
-type cart_type struct {
+type Cart_type struct {
 	VendorCode string
 	Quantity int
 }
 
-type user struct {
+type User_type struct {
 	UID string
 	login string
 	passhash string
 	email string
 	cookie string
-	cart []cart_type
+	cart []Cart_type
 	shipping_adress1 string
 	shipping_adress2 string
 	shipping_adress3 string
