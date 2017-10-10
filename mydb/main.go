@@ -58,6 +58,8 @@ type User_type struct {
 	payment_info string
 }
 
+type Usercart_type []*Good
+
 type e struct{
 	name,url string
 	elem []string

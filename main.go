@@ -14,13 +14,14 @@ import (
 
 const items_per_page=10
 var goods mydb.Goods
+var userCart map[uint64]mydb.Usercart_type
 //var Context webelements.SessionListType =
 
 func main() {
 	goods.Init("list.csv")
 	goods.AddPrice("")
 	//mycsv.Dump(goods)
-
+	userCart = make(map[uint64]mydb.Usercart_type)
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
 	http.HandleFunc("/cart/", cartHandler)
@@ -38,7 +39,7 @@ var mainTemplate = template.Must(template.ParseFiles("index.tmpl"))
 // alternate "sidebar" and "content" templates.
 var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
 
-var cartTemplate = template.Must(template.ParseFiles("cart.tmpl"))
+var cartTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("cart.tmpl"))
 
 // mainHandler is an HTTP handler that serves the index page (list of goods).
 
@@ -57,8 +58,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		Session uint64
 	}
 	start := time.Now()
-	//data.Session =webelements.SessionGet(w,r)
-	data.Session=100
+	data.Session =webelements.SessionGet(w,r)
+	//data.Session=100
 	goods.Mu.RLock()
 	defer goods.Mu.RUnlock()
 
@@ -116,9 +117,9 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 
 	type datatype struct {
 		mydb.Good
-		Spec1 []spec1type
-		Title string
-		URL   string
+		Spec1   []spec1type
+		Title   string
+		URL     string
 		Session uint64
 	}
 
@@ -129,12 +130,13 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data datatype=datatype{goods.O[dataindex],
-	[]spec1type{},"","/images/"+goods.O[dataindex].VendorCode+".jpg",webelements.SessionGet(w,r)}
-	for _,item3 := range []string{"Высота","Ширина","Диаметр","Размер"} {
-	if data.Spec[item3]!=""{data.Spec1=append(data.Spec1, spec1type{item3,data.Spec[item3]})
+	var data datatype = datatype{goods.O[dataindex],
+		[]spec1type{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", webelements.SessionGet(w, r)}
+	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
+		if data.Spec[item3] != "" {
+			data.Spec1 = append(data.Spec1, spec1type{item3, data.Spec[item3]})
 
-	}
+		}
 	}
 
 	if err := imageTemplate.Execute(w, data); err != nil {
@@ -142,12 +144,20 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func cartHandler(w http.ResponseWriter, r *http.Request) {
-	var data struct{
+	var data struct {
 		Title, Body string
-	mydb.User_type
-	userCart []mydb.Good
+		mydb.User_type
+		UserCart    mydb.Usercart_type
+		Session     uint64
 	}
-	if err := imageTemplate.Execute(w, data); err != nil {
+	sessid := webelements.SessionGet(w, r)
+	data.Session = sessid
+	if r.FormValue("additem") != "" {
+		goodsid := goods.Goodsmap[r.FormValue("additem")]
+		userCart[sessid] = append(userCart[sessid], &goods.O[goodsid]) // refresh добавляет повтор убрать (можно через реферрер
+	}
+	data.UserCart = userCart[sessid]
+	if err := cartTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
 }
