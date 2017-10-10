@@ -10,11 +10,13 @@ import (
 "strconv"
 "./webelements"
 "./mydb"
+	"index/suffixarray"
 )
 
 const items_per_page=10
 var goods mydb.Goods
 var userCart map[uint64]mydb.Usercart_type
+var index *suffixarray.Index
 //var Context webelements.SessionListType =
 
 func main() {
@@ -22,9 +24,16 @@ func main() {
 	goods.AddPrice("")
 	//mycsv.Dump(goods)
 	userCart = make(map[uint64]mydb.Usercart_type)
+	var tmpstring []byte
+	for _,k:=range goods.O {
+		tmpstring=append(tmpstring,[]byte(k.Description)...)
+	}
+	fmt.Println(tmpstring)
+	index = suffixarray.New(tmpstring)
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
 	http.HandleFunc("/cart/", cartHandler)
+	http.HandleFunc("/search/", searchHandler)
 	fs1 := webelements.MyFs{http.Dir("img/")}
 	//http.ListenAndServe(":8080", http.FileServer(fs1))
 	//fs := http.FileServer(http.Dir("img/"))
@@ -40,7 +49,7 @@ var mainTemplate = template.Must(template.ParseFiles("index.tmpl"))
 var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
 
 var cartTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("cart.tmpl"))
-
+var searchTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("search.tmpl"))
 // mainHandler is an HTTP handler that serves the index page (list of goods).
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
@@ -158,6 +167,33 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data.UserCart = userCart[sessid]
 	if err := cartTemplate.Execute(w, data); err != nil {
+		log.Println(err)
+	}
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Title, Body string
+		mydb.User_type
+		UserCart    mydb.Usercart_type
+		Session     uint64
+		SearchResult []int
+	}
+	sessid := webelements.SessionGet(w, r)
+	data.Session = sessid
+	searchstring := r.FormValue("text")
+	fmt.Println("=============",[]byte(searchstring))
+	if searchstring != "" {
+
+		offsets := index.Lookup([]byte("ana"), -1)
+		for _, off := range offsets {
+			fmt.Println(off)
+		}
+		data.SearchResult=index.Lookup([]byte(searchstring), -1)
+
+	}
+	data.UserCart = userCart[sessid]
+	if err := searchTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
 }
