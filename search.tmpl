@@ -1,0 +1,19 @@
+{{define "content"}}
+
+=================================================
+<div id="image88">
+
+    <div class="n-product-spec-wrap__body">
+        <dl class="n-product-spec">
+            {{- range .SearchResult}}
+            <dt class="n-product-spec__name"><span class="n-product-spec__name-inner">{{.}}</span></dt>
+            {{- end}}
+        </dl>
+
+    </div>
+</div>
+{{end}}
+
+ {{define "sidebar"}}
+<a href="/">Back</a>
+{{end}}
