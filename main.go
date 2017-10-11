@@ -23,6 +23,7 @@ func main() {
 	goods.Init("list.csv")
 	goods.AddPrice("")
 	//mycsv.Dump(goods)
+	a:=goods.String()
 	userCart = make(map[uint64]mydb.Usercart_type)
 	var tmpstring []byte
 	for _,k:=range goods.O {
