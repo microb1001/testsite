@@ -121,3 +121,7 @@ func (s *Goods) AddPrice (filename string){
 	s.Mu.Lock()
 	defer s.Mu.Unlock()
 }
+
+func (s *Good) String () string {
+	return s.Description
+}

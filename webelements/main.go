@@ -16,6 +16,7 @@ import (
 
 
 	"crypto/rand"
+	"index/suffixarray"
 )
 const COOKIES_NAME="PHPSESSID"
 
@@ -201,6 +202,14 @@ func Breadcrumbs() Breadcrumbs_type {
 return nil
 }
 
+type Sphinx struct{
+	data []byte
+	index suffixarray.Index
+}
+
+func (s *Sphinx) Add(w  []fmt.Stringer){
+	s.data=append (s.data,[]byte( w[0].String())...)
+}
 
 /*
 	func main() {

@@ -17,13 +17,15 @@ const items_per_page=10
 var goods mydb.Goods
 var userCart map[uint64]mydb.Usercart_type
 var index *suffixarray.Index
+var e webelements.Sphinx
 //var Context webelements.SessionListType =
 
 func main() {
 	goods.Init("list.csv")
 	goods.AddPrice("")
 	//mycsv.Dump(goods)
-	a:=goods.String()
+	//e.Add(goods)
+	//fmt.Println(a)
 	userCart = make(map[uint64]mydb.Usercart_type)
 	var tmpstring []byte
 	for _,k:=range goods.O {
