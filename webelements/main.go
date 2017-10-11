@@ -16,6 +16,8 @@ import (
 
 
 	"crypto/rand"
+
+
 	"index/suffixarray"
 )
 const COOKIES_NAME="PHPSESSID"
@@ -202,14 +204,102 @@ func Breadcrumbs() Breadcrumbs_type {
 return nil
 }
 
+
+
+
+
+
 type Sphinx struct{
 	data []byte
 	index suffixarray.Index
 }
 
-func (s *Sphinx) Add(w  []fmt.Stringer){
-	s.data=append (s.data,[]byte( w[0].String())...)
+type Shape interface {
+	ToByte(int) []byte
 }
+
+func (s *Sphinx) Add(w Shape){
+	s.data=append (s.data, w.ToByte(0)...)
+}
+/*
+func Ty (w Shape){
+
+}
+func Test(){
+	var goods Goods
+	var d Goods
+	var e Sphinx
+	//	var d S
+
+	e.Add(&goods)
+	Ty(&d)
+	//webelements.Ty2(&goods)
+}
+
+type S struct { i int }
+func (p *S) Get() int  { return p.i }
+func (p *S) Put(v int) { p.i = v }
+
+
+type I interface {
+	Get() int
+	Put(int)
+}
+func ty (m I){
+
+}
+func Ty2 (m Shape){
+
+}
+func Test2(){
+	var goods Goods
+	var e Sphinx
+	var d S
+
+	e.Add(&goods)
+	ty(&d)
+	Ty2(&goods)
+}
+type Good struct {
+	UIN int `csv:"UIN"`
+	Barcode int
+	VendorCode string `csv:"Артикул"`
+	Brief string `csv:"Описание"`
+	Price int `csv:"Цена"`
+	Quantity int `csv:"Количество"`
+	Available bool `csv:"В продаже"`
+	MainCategory string `csv:"Категория"`
+	Category string `csv:"Товар"`
+	Spec map[string]string `csv:"Поиск"`
+	Pictures string   `csv:"Артикул"`
+	Info  int  `csv:"N"`
+	ShortDescription string `csv:"Описание"`
+	Description string   `csv:"Характеристика"`
+	Images string
+	UrlAlias string `csv:"Path"`
+}
+
+type Goods struct {
+	Mu            sync.RWMutex
+	O             []Good
+
+	Goodsmap      map[string]int
+	Sel           map[string][]int
+	category1     map[string]map[string]string
+	category2     map[string]string
+	//Category1list [] Category1listType
+	category2list [] struct{key, value string}
+}
+
+func (s *Goods) String (i int) []byte {
+	return []byte(s.O[0].Description)
+}
+
+*/
+
+
+
+
 
 /*
 	func main() {

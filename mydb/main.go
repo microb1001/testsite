@@ -5,6 +5,7 @@ import (
 	"sort"
 	"fmt"
 	"sync"
+
 )
 type Good struct {
 	UIN int `csv:"UIN"`
@@ -122,6 +123,6 @@ func (s *Goods) AddPrice (filename string){
 	defer s.Mu.Unlock()
 }
 
-func (s *Good) String () string {
-	return s.Description
+func (s *Goods) ToByte (i int) []byte {
+	return []byte(s.O[i].Description)
 }

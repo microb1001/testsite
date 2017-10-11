@@ -19,12 +19,22 @@ var userCart map[uint64]mydb.Usercart_type
 var index *suffixarray.Index
 var e webelements.Sphinx
 //var Context webelements.SessionListType =
+func Test(){
+	var goods mydb.Goods
+	var e webelements.Sphinx
+//	var d S
 
+	e.Add(&goods)
+//	ty(&d)
+	//webelements.Ty2(&goods)
+}
 func main() {
 	goods.Init("list.csv")
 	goods.AddPrice("")
 	//mycsv.Dump(goods)
-	//e.Add(goods)
+	//e.Add(&goods)
+	//var r mydb.Goods
+	//webelements.Ty2(&r)
 	//fmt.Println(a)
 	userCart = make(map[uint64]mydb.Usercart_type)
 	var tmpstring []byte
