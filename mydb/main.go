@@ -126,3 +126,7 @@ func (s *Goods) AddPrice (filename string){
 func (s *Goods) ToByte (i int) []byte {
 	return []byte(s.O[i].Description)
 }
+
+func (s *Goods) Len () int {
+	return len(s.O)
+}

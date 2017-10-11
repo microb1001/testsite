@@ -204,25 +204,40 @@ func Breadcrumbs() Breadcrumbs_type {
 return nil
 }
 
-
-
-
-
-
 type Sphinx struct{
-	data []byte
-	index suffixarray.Index
+	Data  []byte
+	index *suffixarray.Index
+	key map[int]int
+}
+func (s *Sphinx) Init(){
+	s.key=make(map[int]int,0)
 }
 
-type Shape interface {
+type AddToSphinx interface {
 	ToByte(int) []byte
+	Len() int
 }
 
-func (s *Sphinx) Add(w Shape){
-	s.data=append (s.data, w.ToByte(0)...)
+func (s *Sphinx) Add(w AddToSphinx){
+	for i:=0;i<w.Len();i++{
+		s.key[len(s.Data)]=i
+		s.Data =append (s.Data, 0)
+		s.Data =append (s.Data, w.ToByte(i)...)
+
+	}
+	s.Data =append (s.Data, 0)
+	s.index = suffixarray.New(s.Data)
 }
+func (s *Sphinx) Find(str string) (ret []int){
+ret1:=s.index.Lookup([]byte(str),-1)
+for _,i:=range ret1{
+	ret=append(ret,s.key[i])
+}
+return ret1 // для проверки
+}
+
 /*
-func Ty (w Shape){
+func Ty (w AddToSphinx){
 
 }
 func Test(){
@@ -248,7 +263,7 @@ type I interface {
 func ty (m I){
 
 }
-func Ty2 (m Shape){
+func Ty2 (m AddToSphinx){
 
 }
 func Test2(){
@@ -370,7 +385,7 @@ import (
 // Decoding gives you an Image.
 // If you have an io.Reader already, you can give that to Decode
 // without reading it into a []byte.
-image, _, err := image.Decode(bytes.NewReader(data))
+image, _, err := image.Decode(bytes.NewReader(Data))
 // check err
 
 newImage := resize.Resize(160, 0, original_image, resize.Lanczos3)
