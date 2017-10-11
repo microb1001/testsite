@@ -17,25 +17,16 @@ const items_per_page=10
 var goods mydb.Goods
 var userCart map[uint64]mydb.Usercart_type
 var index *suffixarray.Index
-var e webelements.Sphinx
+var Sphi webelements.Sphinx
 //var Context webelements.SessionListType =
-func Test(){
-	var goods mydb.Goods
-	var e webelements.Sphinx
-//	var d S
 
-	e.Add(&goods)
-//	ty(&d)
-	//webelements.Ty2(&goods)
-}
 func main() {
 	goods.Init("list.csv")
 	goods.AddPrice("")
 	//mycsv.Dump(goods)
-	//e.Add(&goods)
-	//var r mydb.Goods
-	//webelements.Ty2(&r)
-	//fmt.Println(a)
+	Sphi.Init()
+	Sphi.Add(&goods)
+
 	userCart = make(map[uint64]mydb.Usercart_type)
 	var tmpstring []byte
 	for _,k:=range goods.O {
@@ -197,11 +188,12 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	searchstring := r.FormValue("text")
 	fmt.Println("=============",[]byte(searchstring))
 	if searchstring != "" {
-
-		offsets := index.Lookup([]byte("ana"), -1)
-		for _, off := range offsets {
-			fmt.Println(off)
+		otv:=Sphi.Find(searchstring)
+		fmt.Println(otv)
+		for _,i:=range otv{
+			fmt.Println(goods.O[i].Description)
 		}
+
 		data.SearchResult=index.Lookup([]byte(searchstring), -1)
 
 	}
