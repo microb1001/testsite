@@ -7,7 +7,7 @@ import (
 	"sync"
 
 )
-type Good struct {
+type GoodsElem_type struct {
 	UIN int `csv:"UIN"`
 	Barcode int
 	VendorCode string `csv:"Артикул"`
@@ -26,20 +26,19 @@ type Good struct {
 	UrlAlias string `csv:"Path"`
 }
 
-type Goods struct {
+type  Category1List_type struct{Key string; Value [] struct{ Key, Url string}}
+
+type Goods_type struct {
 	Mu            sync.RWMutex
-	O             []Good
+	O             []GoodsElem_type
 
 	Goodsmap      map[string]int
 	Sel           map[string][]int
 	category1     map[string]map[string]string
 	category2     map[string]string
-	Category1list [] Category1listType
+	Category1list [] Category1List_type
 	category2list [] struct{key, value string}
 }
-
-type  Category1listType struct{	Key string; Value [] struct{ Key, Url string}}
-
 
 type Cart_type struct {
 	VendorCode string
@@ -59,7 +58,7 @@ type User_type struct {
 	payment_info string
 }
 
-type Usercart_type []*Good
+type Usercart_type []*GoodsElem_type
 
 type e struct{
 	name,url string
@@ -72,8 +71,7 @@ var category1e []e = []e{
 	e{"/prochee","Прочее",[]string{}},
 }
 
-
-func (s *Goods) Init (filename string){
+func (s *Goods_type) Init (filename string){
 	s.Mu.Lock()
 	defer s.Mu.Unlock()
 	mycsv.Load_csv(&s.O, filename, "csv")
@@ -96,7 +94,7 @@ func (s *Goods) Init (filename string){
 		}
 	}
 	for f,g:= range s.category1 {
-		var tp Category1listType
+		var tp Category1List_type
 		tp.Key =f
 		for k,m:= range g {
 			tp.Value =append(tp.Value,struct{Key, Url string}{k,m})
@@ -118,15 +116,16 @@ func (s *Goods) Init (filename string){
 	fmt.Println(s.category2list)
 
 }
-func (s *Goods) AddPrice (filename string){
+
+func (s *Goods_type) AddPrice (filename string){
 	s.Mu.Lock()
 	defer s.Mu.Unlock()
 }
 
-func (s *Goods) ToByte (i int) []byte {
-	return []byte(s.O[i].Description)
+func (s *Goods_type) ToByte (i int) []byte {
+	return []byte(s.O[i].Description+s.O[i].Brief+"категория:"+s.O[i].Category+" : "+s.O[i].MainCategory)
 }
 
-func (s *Goods) Len () int {
+func (s *Goods_type) Len () int {
 	return len(s.O)
 }

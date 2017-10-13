@@ -23,14 +23,6 @@ import (
 )
 const COOKIES_NAME="PHPSESSID"
 
-type PagerElemType struct{
-	Page int
-	Class string
-	Url string
-	Current bool
-}
-
-
 func SessionGet (w http.ResponseWriter, r *http.Request) uint64{
 	var id *http.Cookie
 	var res uint64
@@ -45,18 +37,18 @@ func SessionGet (w http.ResponseWriter, r *http.Request) uint64{
 	if err==nil{
 		return res
 	}
-	rand64 := make([]byte, 8) // генерация случайного числа
-	rand.Read(rand64)
-	for _,i:=range rand64 {res=res*256+uint64(i)}
+	res=Rand64 ()
 	id=&http.Cookie{Name:COOKIES_NAME,Value:strconv.FormatUint(res, 10)}
 	http.SetCookie(w , id)
 	return res
 }
 
-type PagerType struct{
-	Elem [] PagerElemType
-	Next string
-	Prev string
+func Rand64 () uint64 {   // генерация истинно случайного числа из crypto
+	var res uint64
+	rand64 := make([]byte, 8)
+	rand.Read(rand64)
+	for _,i:=range rand64 {res=res*256+uint64(i)}
+	return res
 }
 
 func MinMax(index,min,max int) int{
@@ -69,25 +61,42 @@ func MinMax(index,min,max int) int{
 	return index
 }
 
-func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,i,j int) {
-	maxPage :=(itemsCnt-1)/ items_per_page // начинается с нуля
-	if Page > 0 {newP.Prev= urlPart +"p="+strconv.Itoa(Page-1)}
-	if Page < maxPage {newP.Next= urlPart +"p="+strconv.Itoa(Page+1)}
-	for ii:=MinMax(Page-2,0, maxPage);ii<=MinMax(Page+2,0, maxPage);ii++{
-		newP.Elem=append(newP.Elem,PagerElemType{ii+1,"", urlPart +"p="+strconv.Itoa(ii),ii == Page} )
+type PagerElemType struct{
+	Page int
+	Class string
+	Url string
+	Current bool
+}
+
+type PagerType struct{
+	Elem [] PagerElemType
+	Next string
+	Prev string
+}
+
+func Pager(Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType, i, j int) {
+	maxPage := (itemsCnt - 1) / items_per_page // начинается с нуля
+	if Page > 0 {
+		newP.Prev = urlPart + "p=" + strconv.Itoa(Page-1)
 	}
-	i=MinMax((Page)*items_per_page,0, itemsCnt)
-	j=MinMax((Page+1)*items_per_page,0, itemsCnt)
+	if Page < maxPage {
+		newP.Next = urlPart + "p=" + strconv.Itoa(Page+1)
+	}
+	for ii := MinMax(Page-2, 0, maxPage); ii <= MinMax(Page+2, 0, maxPage); ii++ {
+		newP.Elem = append(newP.Elem, PagerElemType{ii + 1, "", urlPart + "p=" + strconv.Itoa(ii), ii == Page})
+	}
+	i = MinMax((Page)*items_per_page, 0, itemsCnt)
+	j = MinMax((Page+1)*items_per_page, 0, itemsCnt)
 	return
 }
 /*  пример управляемой FileServer
 почитать здесь https://golang.org/src/net/http/fs.go
 	) */
-	type MyFs struct {
-		http.FileSystem
-	}
+type MyFs struct {
+	http.FileSystem
+}
 
-	func (mfs MyFs) Open(fname string) (http.File, error) {
+func (mfs MyFs) Open(fname string) (http.File, error) {
 		var name, folder, ext string
 		var f http.File
 
@@ -120,7 +129,6 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 			f, err = mfs.FileSystem.Open(folder+name+ext)
 
 		}
-
 	if err != nil {
 		return nil, err
 	}
@@ -129,18 +137,10 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 	if stat.IsDir() {
 		return nil, os.ErrNotExist
 	}
-	return neuteredReaddirFile{f}, nil
-	}
+	return f, nil
+}
 
-	type neuteredReaddirFile struct {
-		http.File
-	}
-
-	func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
-	return nil, nil
-	}
-
-	func Thumb(inFile, outFile string, maxWidth, maxHeight int ) error {
+func Thumb(inFile, outFile string, maxWidth, maxHeight int ) error {
 		start := time.Now()
 
 		reader, err := os.Open(inFile)
@@ -196,8 +196,8 @@ func Pager (Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType,
 		log.Println("timer ==", elapsed)
 		log.Println(file.Close())
 		return nil
+}
 
-	}
 type Breadcrumbs_type []struct{
 	Url,Name string
 }
@@ -221,7 +221,6 @@ type AddToSphinx interface {
 }
 
 func (s *Sphinx) Add(w AddToSphinx){
-
 	for i:=0;i<w.Len();i++{
 		s.Data =append (s.Data, 0)
 		s.Data =append (s.Data, w.ToByte(i)...)

@@ -1,72 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+{{/*
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+      integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+*/}}
 <head>
     <meta charset="utf-8">
+
     <title>{{.Title}}{{.Session}}</title>
     <style>
         body {
             font-family: sans-serif;
         }
+
         h1 {
             background: #ddd;
         }
+
         #sidebar {
             float: left;
         }
     </style>
 </head>
 <body>
-<h1>{{.Title}}  {{.Session}}</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+        <div class="col-md-1">.col-md-1</div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">.col-md-8</div>
+        <div class="col-md-4">.col-md-4</div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">.col-md-4</div>
+        <div class="col-md-4">.col-md-4</div>
+        <div class="col-md-4">.col-md-4</div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">.col-md-6</div>
+        <div class="col-md-6">.col-md-6</div>
+    </div>
+    <div class="row">
+    <h1>{{.Title}} {{.Session}}</h1>
 
-<div id="sidebar">
-    {{block "sidebar" .}}
-    {{- range .Cat}}
+    <div id="sidebar" class="col-md-3">
+        {{block "sidebar" .}}
+        {{- range .Cat}}
 
-    <ul>
-        {{.Key}}
-        {{- range .Value}}
-        <li><a href="{{.Url}}">{{.Key}}</a></li>
+        <ul>
+            {{.Key}}
+            {{- range .Value}}
+            <li><a href="{{.Url}}">{{.Key}}</a></li>
+            {{- end}}
+        </ul>
         {{- end}}
-    </ul>
-    {{- end}}
 
-    <h2>Links</h2>
+        <h2>Links</h2>
 
-    {{/* The dashes in the following template directives
-    ensure the generated HTML of this list contains no
-    extraneous spaces or line breaks. */}}
+        {{/* The dashes in the following template directives
+        ensure the generated HTML of this list contains no
+        extraneous spaces or line breaks. */}}
 
-    {{end}}
-</div>
+        {{end}}
+    </div>
 
-{{block "content" .}}
-<div id="content">
-    {{.Body}}
-    {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
-    {{- range .Pager.Elem}}
-    {{if .Current}}
-    <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-    {{else}}
-    <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-    {{end}}
-    {{- end}}
-    {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
-    <ul>
-        <style> #sidebar-left {padding-top: 30px;} </style>
-        {{- range .Links}}
-        <li>
-            <div class="liclass">
-                <a style="text-align:center;" href="{{.URL}}"><img src="{{.Image}}"><br><br>{{.Brief}}</a></div>            <div class="price">{{.Price}}</div>
-        </li>
-
-
-        {{/*<li><a href="{{.URL}}">{{.Brief}}</a></li>*/}}
-        <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow" id="addToCart_btn">Купить</a></div>
+    {{block "content" .}}
+    <div id="content" class="col-md-9">
+        {{.Body}}
+        {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
+        {{- range .Pager.Elem}}
+        {{if .Current}}
+        <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+        {{else}}
+        <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+        {{end}}
         {{- end}}
-    </ul>
-    {{.Timer}}
-</div>
-{{end}}
+        {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
+        <ul>
+            <style> #sidebar-left {
+                padding-top: 30px;
+            } </style>
+            {{- range .Links}}
+            <li>
+                <div class="liclass">
+                    <a style="text-align:center;" href="{{.URL}}"><img src="{{.Image}}"><br><br>{{.Brief}}</a></div>
+                <div class="price">{{.Price}}</div>
+            </li>
 
+
+            {{/*
+            <li><a href="{{.URL}}">{{.Brief}}</a></li>
+            */}}
+            <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
+                                       id="addToCart_btn">Купить</a></div>
+            {{- end}}
+        </ul>
+        {{.Timer}}
+    </div>
+    {{end}}
+    </div>
+</div>
 </body>
 </html>

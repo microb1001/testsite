@@ -1,20 +1,20 @@
 package main
 
 import (
-"html/template"
-"log"
-"net/http"
-"strings"
-"time"
-"fmt"
-"strconv"
-"./webelements"
-"./mydb"
+	"html/template"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+	"fmt"
+	"strconv"
+	"./webelements"
+	"./mydb"
 	"index/suffixarray"
 )
 
 const items_per_page=10
-var goods mydb.Goods
+var goods mydb.Goods_type
 var userCart map[uint64]mydb.Usercart_type
 var index *suffixarray.Index
 var Sphi webelements.Sphinx
@@ -37,7 +37,7 @@ func main() {
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
 	http.HandleFunc("/cart/", cartHandler)
-	http.HandleFunc("/search/", searchHandler)
+	http.HandleFunc("/search1/", searchHandler)
 	fs1 := webelements.MyFs{http.Dir("img/")}
 	//http.ListenAndServe(":8080", http.FileServer(fs1))
 	//fs := http.FileServer(http.Dir("img/"))
@@ -59,23 +59,32 @@ var searchTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFile
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	type LinkType struct {
-		mydb.Good
+		mydb.GoodsElem_type
+
 		URL, Title, Image string
 	}
 	var data struct{
 		Title, Body string
 		Links []LinkType
 		Pager webelements.PagerType
-		Cat []mydb.Category1listType
+		Cat []mydb.Category1List_type
 		Timer time.Duration //Timer
 		Session uint64
 	}
 	start := time.Now()
 	data.Session =webelements.SessionGet(w,r)
-	//data.Session=100
 	goods.Mu.RLock()
 	defer goods.Mu.RUnlock()
 
+	searchstring := r.FormValue("text")
+	if searchstring != "" {
+		otv:=Sphi.Find(searchstring)
+		for _,i:=range otv{
+			fmt.Println(goods.O[i].Description)
+		}
+
+		//SearchResult:=index.Lookup([]byte(searchstring), -1)
+	}
 
 
 
@@ -91,6 +100,10 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	data.Title= "Image gallery 11-11"
 	data.Body = "Welcome to the image gallery."
 	mainPage=r.URL.Path // !!Нужна обработка пользовательского ввода!!
+	if mainPage=="/search/" {
+		goods.Sel[mainPage]=Sphi.Find(searchstring)
+	}
+	fmt.Println("<<<<<<<<<<<<<<<",goods.Sel[mainPage])
 	pageCurrent,err:=strconv.Atoi(r.FormValue("p"))
 	if err != nil {
 		pageCurrent = 0
@@ -129,7 +142,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type datatype struct {
-		mydb.Good
+		mydb.GoodsElem_type
 		Spec1   []spec1type
 		Title   string
 		URL     string
@@ -195,8 +208,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		data.SearchResult=index.Lookup([]byte(searchstring), -1)
-
 	}
+
 	data.UserCart = userCart[sessid]
 	if err := searchTemplate.Execute(w, data); err != nil {
 		log.Println(err)
