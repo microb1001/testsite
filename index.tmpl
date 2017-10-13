@@ -53,64 +53,78 @@
         <div class="col-md-6">.col-md-6</div>
     </div>
     <div class="row">
-    <h1>{{.Title}} {{.Session}}</h1>
+        <h1 class="col-md-12">{{.Title}}
+            <small>{{.Session}}</small>
+        </h1>
 
-    <div id="sidebar" class="col-md-3">
-        {{block "sidebar" .}}
-        {{- range .Cat}}
+        <div id="sidebar" class="col-md-3">
+            {{block "sidebar" .}}
+            {{- range .Cat}}
 
-        <ul>
-            {{.Key}}
-            {{- range .Value}}
-            <li><a href="{{.Url}}">{{.Key}}</a></li>
+            <ul>
+                {{.Key}}
+                {{- range .Value}}
+                <li><a href="{{.Url}}">{{.Key}}</a></li>
+                {{- end}}
+            </ul>
             {{- end}}
-        </ul>
-        {{- end}}
 
-        <h2>Links</h2>
+            <h2>Links</h2>
 
-        {{/* The dashes in the following template directives
-        ensure the generated HTML of this list contains no
-        extraneous spaces or line breaks. */}}
+            {{/* The dashes in the following template directives
+            ensure the generated HTML of this list contains no
+            extraneous spaces or line breaks. */}}
 
-        {{end}}
-    </div>
+            {{end}}
+        </div>
 
-    {{block "content" .}}
-    <div id="content" class="col-md-9">
-        {{.Body}}
-        {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
-        {{- range .Pager.Elem}}
-        {{if .Current}}
-        <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-        {{else}}
-        <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-        {{end}}
-        {{- end}}
-        {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
-        <ul>
-            <style> #sidebar-left {
-                padding-top: 30px;
-            } </style>
-            {{- range .Links}}
-            <li>
-                <div class="liclass">
-                    <a style="text-align:center;" href="{{.URL}}"><img src="{{.Image}}"><br><br>{{.Brief}}</a></div>
-                <div class="price">{{.Price}}</div>
-            </li>
+        {{block "content" .}}
+        <div id="content" class="col-md-9">
+            {{.Body}}
 
-
-            {{/*
-            <li><a href="{{.URL}}">{{.Brief}}</a></li>
-            */}}
-            <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
-                                       id="addToCart_btn">Купить</a></div>
+            <div class="col-md-12">.col-md-1
+            </div>
+            {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
+            {{- range .Pager.Elem}}
+            {{if .Current}}
+            <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+            {{else}}
+            <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+            {{end}}
             {{- end}}
-        </ul>
-        {{.Timer}}
+            {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
+
+            <ul>
+                <style> #sidebar-left {
+                    padding-top: 30px;
+                } </style>
+                <div class="row">
+                    {{- range .Links}}
+                    <div class="col-md-4">
+
+                        <li>
+                            <div class="liclass">
+                                <a style="text-align:center;" href="{{.URL}}"><img class="img-thumbnail"
+                                        src="{{.Image}}" ><br><br>{{.Brief}}</a>
+                            </div>
+                            <div class="price">{{.Price}}</div>
+                        </li>
+
+
+                        {{/*
+                        <li><a href="{{.URL}}">{{.Brief}}</a></li>
+                        */}}
+                        <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
+                                                   id="addToCart_btn">Купить</a></div>
+                    </div>
+                    {{- end}}
+                </div>
+            </ul>
+            {{.Timer}}
+        </div>
     </div>
     {{end}}
-    </div>
+</div>
 </div>
 </body>
 </html>
