@@ -100,23 +100,53 @@
                 } </style>
                 <div class="row">
                     {{- range .Links}}
-                    <div class="col-md-4">
 
-                        <li>
-                            <div class="liclass">
-                                <a style="text-align:center;" href="{{.URL}}"><img class="img-thumbnail"
-                                        src="{{.Image}}" ><br><br>{{.Brief}}</a>
+
+
+                        {{/*     <div class="col-md-4">
+                        <div class="img-thumbnail">
+                            <a style="text-align:center;" href="{{.URL}}"><img class="img-thumbnail"
+                                                                               src="{{.Image}}"><br><br>{{.Brief}}</a>
+                        </div>
+                        */}}
+                        <div class="col-sm-6 col-md-4">
+                            <div class="thumbnail">
+                                <img src="https://itchief.ru/assets/demo/images/image01-800x600-min.jpg" alt="...">
+                                <div class="caption">
+                                    <h3>Nobis est laborum</h3>
+                                    <p>Lorem ipsum dolor sit amet. Eligendi optio, cumque nihil molestiae. Nemo enim
+                                        ipsam voluptatem, quia. Velit, sed quia dolor sit amet. Voluptate velit esse,
+                                        quam nihil molestiae consequatur, vel illum.</p>
+                                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
+                                                                                                       class="btn btn-default"
+                                                                                                       role="button">Button</a>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="price">{{.Price}}</div>
-                        </li>
+                        </div>
+                        {{/*
+                        <div class="img-thumbnail">
+                            <img src="{{.Image}}" alt="...">
+                            <div class="caption">
+                                <h3>Заголовок...</h3>
+                                <p>Контент...</p>
+                                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
+                                                                                                   class="btn btn-default"
+                                                                                                   role="button">Button</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="price">{{.Price}}</div>
+                        */}}
 
 
                         {{/*
                         <li><a href="{{.URL}}">{{.Brief}}</a></li>
-                        */}}
+
                         <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
-                                                   id="addToCart_btn">Купить</a></div>
-                    </div>
+                                                   id="addToCart_btn">Купить</a></div>  </div>
+                        */}}
+
                     {{- end}}
                 </div>
             </ul>
