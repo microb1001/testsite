@@ -20,7 +20,9 @@
     </style>
 </head>
 <body>
+
 <div class="container">
+
     <div class="row">
         <div class="col-md-1">.col-md-1</div>
         <div class="col-md-1">.col-md-1</div>
@@ -53,11 +55,17 @@
     <div class="row">
         <h1 class="col-md-12 col-sm-12">{{.Title}}
             <small>{{.Session}}</small>
-        </h1>
 
-        <div id="sidebar" class="col-md-2 col-sm-3 col-xs-12">
+        <form class="col-md-12 col-sm-12 form-inline">
+            <div class="input-group input-group-sm">
+                <input type="search" class="form-control" placeholder="Поиск по каталогу...">
+                <span class="input-group-btn"><button class="btn btn-primary" type="submit">Найти</button></span>
+            </div>
+        </form>
+        </h1>
+        <div id="sidebar" class="col-md-2 col-sm-3 col-xs-12 bs-docs-sidebar">
             {{block "sidebar" .}}
-            <ul class="nav nav-pills nav-stacked">
+            <ul class="nav nav-pills nav-stacked nav bs-docs-sidenav">
                 {{- range .Cat}}
                 <li class="active"><a href="#">{{.Key}}</a></li>
                 {{- range .Value}}
@@ -157,7 +165,19 @@
                 </div>
             </li>
 
-
+            <div class="well" style="max-width: 340px; padding: 8px 0;">
+                <ul class="nav nav-list">
+                    <li class="nav-header">Заголовок списка</li>
+                    <li class="active"><a href="#">Домой</a></li>
+                    <li><a href="#">Библиотека</a></li>
+                    <li><a href="#">Приложения</a></li>
+                    <li class="nav-header">Другой заголовок списка</li>
+                    <li><a href="#">Профиль</a></li>
+                    <li><a href="#">Настройки</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Помощь</a></li>
+                </ul>
+            </div>
             <ul class=" list-unstyled">
                 <a href="#">
                     <li>Главная</li>
@@ -173,7 +193,123 @@
                 </a>
             </ul>
 
-            <h2>Links</h2>
+            <div class="bs-docs-sidebar hidden-print" role="complementary" style="background: aliceblue none repeat scroll 0% 0%; border-radius: 5px; padding: 10px 0px;">
+                <ul class="nav bs-docs-sidenav">
+
+                    <li>
+                        <a href="#glyphicons">Значки символов</a>
+                        <ul class="nav">
+                            <li><a href="#glyphicons-glyphs">Доступные символы</a></li>
+                            <li><a href="#glyphicons-how-to-use">Как использовать</a></li>
+                            <li><a href="#glyphicons-examples">Примеры</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#nav">Навигация</a>
+                        <ul class="nav">
+                            <li><a href="#nav-tabs">Вкладки</a></li>
+                            <li><a href="#nav-pills">Навигационные кнопки</a></li>
+                            <li><a href="#nav-justified">Выравнивание по ширине навигаций</a></li>
+                            <li><a href="#nav-disabled-links">Заблокированные ссылки</a></li>
+                            <li><a href="#nav-dropdowns">Выпадающее меню</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#navbar">Навигационная панель</a>
+                        <ul class="nav">
+                            <li><a href="#navbar-default">Дефолтная нав панель</a></li>
+                            <li><a href="#navbar-forms">Формы</a></li>
+                            <li><a href="#navbar-buttons">Кнопки</a></li>
+                            <li><a href="#navbar-text">Текст</a></li>
+                            <li><a href="#navbar-links">Неконтекстные ссылки</a></li>
+                            <li><a href="#navbar-component-alignment">Компонент выравнивания</a></li>
+                            <li><a href="#navbar-fixed-top">Фиксация вверху</a></li>
+                            <li><a href="#navbar-fixed-bottom">Фиксация внизу</a></li>
+                            <li><a href="#navbar-static-top">Статический верх</a></li>
+                            <li><a href="#navbar-inverted">Инвертированная панель</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#breadcrumbs">Навигационный маршрут</a></li>
+                    <li>
+                        <a href="#pagination">Постраничный разделение</a>
+                        <ul class="nav">
+                            <li><a href="#pagination-default">По умолчанию</a></li>
+                            <li><a href="#pagination-pager">Пролистування</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#labels">Метки</a></li>
+                    <li><a href="#badges">Значки</a></li>
+                    <li><a href="#jumbotron">Jumbotron</a></li>
+                    <li><a href="#page-header">Заголовок страницы</a></li>
+                    <li>
+                        <a href="#thumbnails">Эскизы</a>
+                        <ul class="nav">
+                            <li><a href="#thumbnails-default">Пример по умолчанию</a></li>
+                            <li><a href="#thumbnails-custom-content">Настраиваемое содержимое</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#alerts">Замечания</a>
+                        <ul class="nav">
+                            <li><a href="#alerts-examples">Примеры</a></li>
+                            <li><a href="#alerts-dismissable">Закрытие замечаний</a></li>
+                            <li><a href="#alerts-links">Ссылки в замечаниях</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#progress">Индикатор выполнения</a>
+                        <ul class="nav">
+                            <li><a href="#progress-basic">Основной пример</a></li>
+                            <li><a href="#progress-label">С меткой</a></li>
+                            <li><a href="#progress-alternatives">Контекстные альтернативы</a></li>
+                            <li><a href="#progress-striped">Полосатый индикатор</a></li>
+                            <li><a href="#progress-animated">Индикатор с анимацией</a></li>
+                            <li><a href="#progress-stacked">Сводный индикатор</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#media">Медиа объект</a>
+                        <ul class="nav">
+                            <li><a href="#media-default">По умолчанию</a></li>
+                            <li><a href="#media-list">Список медиа</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#list-group">Список групп</a>
+                        <ul class="nav">
+                            <li><a href="#list-group-basic">Основной пример</a></li>
+                            <li><a href="#list-group-badges">Значки</a></li>
+                            <li><a href="#list-group-linked">Связанные элементы</a></li>
+                            <li><a href="#list-group-contextual-classes">Контекстные классы</a></li>
+                            <li><a href="#list-group-custom-content">Настраиваемое содержимое</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#panels">Панели</a>
+                        <ul class="nav">
+                            <li><a href="#panels-basic">Основной пример</a></li>
+                            <li><a href="#panels-heading">Панель с заголовком</a></li>
+                            <li><a href="#panels-alternatives">Контекстные альтернативы</a></li>
+                            <li><a href="#panels-tables">С таблицами</a>
+                            </li><li><a href="#panels-list-group">Со списком групп</a>
+                        </li></ul>
+                    </li>
+                    <li><a href="#wells">Ячейки</a></li>
+                    <li><a href="#comments"><span class="glyphicon glyphicon-comment"></span> Комментарии</a></li>
+                    <li class="divider"></li>
+                    <li><a href="http://bootstrap-3.ru/getting-started.php"><span class="glyphicon glyphicon-warning-sign"></span> <strong>Основы Bootstrap</strong></a></li>
+                    <li><a href="http://bootstrap-3.ru/bootstraptheme.php"><span class="glyphicon glyphicon-list-alt"></span> <strong>Шаблоны Bootstrap</strong></a></li>
+                    <li><a href="http://bootstrap-3.ru/css.php"><span class="glyphicon glyphicon-list"></span> <strong>CSS</strong></a></li>
+                    <li><a style="color: rgb(86, 61, 124);" href="http://bootstrap-3.ru/components.php"><span class="glyphicon glyphicon-th-large"></span> <strong>Компоненты</strong></a></li>
+                    <li><a href="http://bootstrap-3.ru/javascript.php"><span class="glyphicon glyphicon-cog"></span> <strong>JavaScript</strong></a></li>
+                    <li><a href="http://bootstrap-3.ru/customize.php"><span class="glyphicon glyphicon-import"></span> <strong>Настроить и скачать</strong></a></li>
+                    <li class="divider"></li>
+                </ul>
+                <a class="back-to-top" href="#top">Наверх</a>
+            </div>
+
+
+    <h2>Links</h2>
 
             {{/* The dashes in the following template directives
             ensure the generated HTML of this list contains no
@@ -201,9 +337,8 @@
 
                             <h4><a href="{{.URL}}">{{.Brief}}</a></h4>
                             <p>{{.Description}}</p>
-                            <p><a href="{{.URLtoCart}}" class="btn btn-primary" role="button">Купить</a> <a href="#"
-                                                                                                            class="btn btn-default"
-                                                                                                            role="button">Button</a>
+                            <p><a href="{{.URLtoCart}}" class="btn btn-primary" role="button">Купить</a>
+                                <a href="{{.URL}}" class="btn btn-default" role="button">Подробнее</a>
                             </p>
                         </div>
                     </div>

@@ -3,10 +3,39 @@
         clear: left;
     }
 }
-/* 2n+1 и 3n подобраны эмпирически должно быть 2n+1 и 3n+1 почему так непонятно*/
+/* 2n+1 и 3n подобраны эмпирически должно быть 2n+1 и 3n+1 почему так непонятно = понятно перед ними два ненужных дива*/
 
 @media (min-width: 992px) {
     #gallery > div:nth-child(3n+3) {
         clear: left;
     }
 }
+
+/* sidebar
+.bs-docs-sidebar {
+    padding-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.bs-docs-sidebar .nav>li>a {
+    color: #999;
+    padding: 4px 20px;
+    font-size: 13px;
+    font-weight: 400;
+}*/
+
+/* nested links
+.bs-docs-sidebar .nav .nav>li>a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 30px;
+    font-size: 12px;
+}*/
+
+.bs-docs-sidenav { margin-bottom: 20px; }
+.bs-docs-sidebar .nav > li > a { display: block; font-size: 12px; font-weight: 500; color: rgb(153, 153, 153); padding: 4px 20px; }
+.bs-docs-sidebar .nav > li > a:hover, .bs-docs-sidebar .nav > li > a:focus { padding-left: 19px; color: rgb(86, 61, 124); text-decoration: none; background-color: transparent; border-left: 1px solid rgb(86, 61, 124); }
+.bs-docs-sidebar .nav .nav { display: none; padding-bottom: 10px; }
+.bs-docs-sidebar .nav .nav > li > a { padding-top: 1px; padding-bottom: 1px; padding-left: 30px; font-size: 12px; font-weight: 400; }
+.bs-docs-sidebar .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav > li > a:focus { padding-left: 29px; }
