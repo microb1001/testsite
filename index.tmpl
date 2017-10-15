@@ -53,16 +53,17 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-        <h1 class="col-md-12 col-sm-12">{{.Title}}
-            <small>{{.Session}}</small>
-
+        <div  class="col-md-12 col-sm-12 col-xs-12">
+            <div  style="float:left"><h1>{{.Title}}<small>{{.Session}}</small></h1></div>
+            <div  style="float:right">
         <form class="col-md-12 col-sm-12 form-inline">
             <div class="input-group input-group-sm">
                 <input type="search" class="form-control" placeholder="Поиск по каталогу...">
                 <span class="input-group-btn"><button class="btn btn-primary" type="submit">Найти</button></span>
             </div>
         </form>
-        </h1>
+            </div>
+        </div>
         <div id="sidebar" class="col-md-2 col-sm-3 col-xs-12 bs-docs-sidebar">
             {{block "sidebar" .}}
             <ul class="nav nav-pills nav-stacked nav bs-docs-sidenav">

@@ -31,7 +31,8 @@
     padding-bottom: 1px;
     padding-left: 30px;
     font-size: 12px;
-}*/
+
+
 
 .bs-docs-sidenav { margin-bottom: 20px; }
 .bs-docs-sidebar .nav > li > a { display: block; font-size: 12px; font-weight: 500; color: rgb(153, 153, 153); padding: 4px 20px; }
@@ -39,3 +40,38 @@
 .bs-docs-sidebar .nav .nav { display: none; padding-bottom: 10px; }
 .bs-docs-sidebar .nav .nav > li > a { padding-top: 1px; padding-bottom: 1px; padding-left: 30px; font-size: 12px; font-weight: 400; }
 .bs-docs-sidebar .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav > li > a:focus { padding-left: 29px; }
+}*/
+
+.bs-docs-sidenav { margin-bottom: 20px; }
+.bs-docs-sidebar .nav > li > a { display: block; font-size: 12px; font-weight: 500; padding: 2px 20px; border-radius: 0}
+.bs-docs-sidebar .nav > li > a:hover, .bs-docs-sidebar .nav > li > a:focus { padding-left: 19px;  text-decoration: none; }
+.bs-docs-sidebar .nav .nav { display: none; padding-bottom: 10px; }
+.bs-docs-sidebar .nav .nav > li > a { padding-top: 1px; padding-bottom: 1px; padding-left: 30px; font-size: 12px; font-weight: 400; }
+.bs-docs-sidebar .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav > li > a:focus { padding-left: 29px; }
+
+
+
+.catalog-page .right-filters .filter-menu > ul > li a:hover {
+    color: #41ee27;
+}
+.catalog-page .right-filters .filter-menu > ul > li > a {
+    font-size: 13px;
+    line-height: 13px;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+}
+.catalog-page .right-filters .filter-menu > ul > li ul {
+    margin-top: 15px;
+}
+.catalog-page .right-filters .filter-menu > ul > li ul li {
+    margin-bottom: 16px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #D8D8D8;
+}
+.catalog-page .right-filters .filter-menu > ul > li ul li a {
+    margin-left: -1px;
+    color: #898989;
+    text-decoration: none;
+}
