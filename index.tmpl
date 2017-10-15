@@ -1,23 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
-{{/*
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-      integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-*/}}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <head>
     <meta charset="utf-8">
-
     <title>{{.Title}}{{.Session}}</title>
     <style>
         body {
             font-family: sans-serif;
         }
-
         h1 {
             background: #ddd;
         }
-
         #sidebar {
             float: left;
         }
@@ -52,12 +45,14 @@
         <div class="col-md-6">.col-md-6</div>
         <div class="col-md-6">.col-md-6</div>
     </div>
+</div>
+<div class="container-fluid">
     <div class="row">
-        <h1 class="col-md-12">{{.Title}}
+        <h1 class="col-md-12 col-sm-12">{{.Title}}
             <small>{{.Session}}</small>
         </h1>
 
-        <div id="sidebar" class="col-md-3">
+        <div id="sidebar" class="col-md-2 col-sm-3 col-xs-12">
             {{block "sidebar" .}}
             {{- range .Cat}}
 
@@ -79,78 +74,71 @@
         </div>
 
         {{block "content" .}}
-        <div id="content" class="col-md-9">
+        <div id="content" class="col-xs-12 col-md-10  col-sm-9">
             {{.Body}}
-
-            <div class="col-md-12">.col-md-1
-            </div>
-            {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
-            {{- range .Pager.Elem}}
-            {{if .Current}}
-            <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-            {{else}}
-            <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-            {{end}}
-            {{- end}}
-            {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
-
-            <ul>
-                <style> #sidebar-left {
-                    padding-top: 30px;
-                } </style>
-                <div class="row">
-                    {{- range .Links}}
-
-
-
-                        {{/*     <div class="col-md-4">
-                        <div class="img-thumbnail">
-                            <a style="text-align:center;" href="{{.URL}}"><img class="img-thumbnail"
-                                                                               src="{{.Image}}"><br><br>{{.Brief}}</a>
+            <div class="row"><style> #sidebar-left {
+                padding-top: 30px;
+            } </style>
+                <div class="col-md-12 col-sm-12">
+                {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
+                {{- range .Pager.Elem}}
+                {{if .Current}}
+                <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+                {{else}}
+                <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+                {{end}}
+                {{- end}}
+                {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
+                </div>{{- range .Links}}
+                        {{/*
+                        <div class="col-md-4">
+                            <div class="img-thumbnail">
+                                <a style="text-align:center;" href="{{.URL}}"><img class="img-thumbnail"
+                                                                                   src="{{.Image}}"><br><br>{{.Brief}}</a>
+                            </div>
                         </div>
-                        */}}
-                        <div class="col-sm-6 col-md-4">
-                            <div class="thumbnail">
-                                <img src="https://itchief.ru/assets/demo/images/image01-800x600-min.jpg" alt="...">
+                            */}}<div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="thumbnail">
+                                    <img src="https://itchief.ru/assets/demo/images/image01-800x600-min.jpg" alt="..."
+                                         class=".img-fluid">
+                                    <div class="caption">
+                                        <h3>Nobis est laborum</h3>
+                                        <p>Lorem ipsum dolor sit amet. Eligendi optio, cumque nihil molestiae. Nemo enim
+                                            ipsam voluptatem, quia. Velit, sed quia dolor sit amet. Voluptate velit
+                                            esse,
+                                            quam nihil molestiae consequatur, vel illum.</p>
+                                        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
+                                                                                                           class="btn btn-default"
+                                                                                                           role="button">Button</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/*
+                            <div class="img-thumbnail">
+                                <img src="{{.Image}}" alt="...">
                                 <div class="caption">
-                                    <h3>Nobis est laborum</h3>
-                                    <p>Lorem ipsum dolor sit amet. Eligendi optio, cumque nihil molestiae. Nemo enim
-                                        ipsam voluptatem, quia. Velit, sed quia dolor sit amet. Voluptate velit esse,
-                                        quam nihil molestiae consequatur, vel illum.</p>
+                                    <h3>Заголовок...</h3>
+                                    <p>Контент...</p>
                                     <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
                                                                                                        class="btn btn-default"
                                                                                                        role="button">Button</a>
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                        {{/*
-                        <div class="img-thumbnail">
-                            <img src="{{.Image}}" alt="...">
-                            <div class="caption">
-                                <h3>Заголовок...</h3>
-                                <p>Контент...</p>
-                                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                                   class="btn btn-default"
-                                                                                                   role="button">Button</a>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="price">{{.Price}}</div>
+                            <div class="price">{{.Price}}</div>
+                            */}}{{/*
+                            <li><a href="{{.URL}}">{{.Brief}}</a></li>
+
+                            <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
+                                                       id="addToCart_btn">Купить</a></div>
+
                         */}}
-
-
-                        {{/*
-                        <li><a href="{{.URL}}">{{.Brief}}</a></li>
-
-                        <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
-                                                   id="addToCart_btn">Купить</a></div>  </div>
-                        */}}
-
-                    {{- end}}
+                        {{- end}}
+                <div class="col-sm-12 col-md-12">
+                {{.Timer}}
                 </div>
-            </ul>
-            {{.Timer}}
+            </div>
         </div>
     </div>
     {{end}}
