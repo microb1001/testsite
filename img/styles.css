@@ -1,0 +1,12 @@
+@media (min-width: 768px) and (max-width: 991px) {
+    #gallery > div:nth-child(2n+1) {
+        clear: left;
+    }
+}
+/* 2n+1 и 3n подобраны эмпирически должно быть 2n+1 и 3n+1 почему так непонятно*/
+
+@media (min-width: 992px) {
+    #gallery > div:nth-child(3n+3) {
+        clear: left;
+    }
+}

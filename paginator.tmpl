@@ -1,0 +1,30 @@
+{{define "paginator"}}
+<ul class="pagination  pagination-sm">
+    {{if .Pager.Prev}}<li><a href="{{.Pager.Prev}}">&laquo;</a></li>
+    {{else}}<li class="disabled"><span>&laquo;</span></li>
+    {{end}}
+    {{- range .Pager.Elem}}
+    {{if .Current}}<li class="active"><a>{{.Page}}</a></li>
+    {{else}}<li><a href="{{.Url}}">{{.Page}}</a></li>
+    {{end}}
+    {{- end}}
+    {{if .Pager.Next}}<li><a href="{{.Pager.Next}}">&raquo;</a></li>
+    {{else}}<li class="disabled"><span>&raquo;</span></li>
+    {{end}}
+</ul>
+{{end}}
+{{/*
+
+{{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
+{{- range .Pager.Elem}}
+{{if .Current}}
+<a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+{{else}}
+<a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
+{{end}}
+{{- end}}
+{{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span
+        class="button__text">Вперед</span></a>{{end}}
+
+
+*/}}
