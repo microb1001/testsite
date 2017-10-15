@@ -98,15 +98,13 @@
                             </div>
                         </div>
                             */}}<div class="col-xs-12 col-sm-6 col-md-4">
-                                <div class="thumbnail">
-                                    <img src="https://itchief.ru/assets/demo/images/image01-800x600-min.jpg" alt="..."
+                                <div class="thumbnail" >
+                                    <img src="{{.Image}}" alt="..."
                                          class=".img-fluid">
                                     <div class="caption">
-                                        <h3>Nobis est laborum</h3>
-                                        <p>Lorem ipsum dolor sit amet. Eligendi optio, cumque nihil molestiae. Nemo enim
-                                            ipsam voluptatem, quia. Velit, sed quia dolor sit amet. Voluptate velit
-                                            esse,
-                                            quam nihil molestiae consequatur, vel illum.</p>
+                                        {{/* <div style="max-height: 300px;word-wrap: break-word;overflow: hidden;"> */}}
+                                        <h4>{{.Brief}}</h4>
+                                        <p>{{.Description}}</p>
                                         <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
                                                                                                            class="btn btn-default"
                                                                                                            role="button">Button</a>

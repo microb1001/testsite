@@ -111,7 +111,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var l, h int
 	data.Pager, l, h = webelements.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage+"?")
 	for _,i := range goods.Sel[mainPage][l:h] {
-		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "","/images/200/"+ goods.O[i].VendorCode+".jpg"})
+		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "","/images/400/"+ goods.O[i].VendorCode+".jpg"})
 	}
 
 	data.Cat=goods.Category1list
