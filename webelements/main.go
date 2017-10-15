@@ -101,7 +101,7 @@ func (mfs MyFs) Open(fname string) (http.File, error) {
 		var f http.File
 
 		Splits :=strings.SplitAfter(fname,".")
-		if len(Splits)==2 && (Splits[1]=="jpg" || Splits[1]=="csv" || Splits[1]=="js" || Splits[1]=="png"){
+		if len(Splits)==2 && (Splits[1]=="jpg" || Splits[1]=="css" || Splits[1]=="js" || Splits[1]=="png"){
 			ext= Splits[1]
 		} else {return nil,os.ErrPermission}
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="/images/styles.css">
 <head>
     <meta charset="utf-8">
     <title>{{.Title}}{{.Session}}</title>
@@ -8,9 +9,11 @@
         body {
             font-family: sans-serif;
         }
+
         h1 {
             background: #ddd;
         }
+
         #sidebar {
             float: left;
         }
@@ -54,15 +57,121 @@
 
         <div id="sidebar" class="col-md-2 col-sm-3 col-xs-12">
             {{block "sidebar" .}}
-            {{- range .Cat}}
-
-            <ul>
-                {{.Key}}
+            <ul class="nav nav-pills nav-stacked">
+                {{- range .Cat}}
+                <li class="active"><a href="#">{{.Key}}</a></li>
                 {{- range .Value}}
                 <li><a href="{{.Url}}">{{.Key}}</a></li>
                 {{- end}}
+                {{- end}}
             </ul>
-            {{- end}}
+            <div class="list-group">
+                {{- range .Cat}}
+                <a href="#" class="list-group-item">{{.Key}}<span class="badge">22</span></a>
+                {{- range .Value}}
+                <a href="{{.Url}}" class="list-group-item"> {{.Key}}</a>
+                {{- end}}
+                {{- end}}
+            </div>
+            <ul class="nav">
+                <li class="nav-header">Главные ссылки</li>
+                <li class="active"><a href="#">Главная</a></li>
+                <li><a href="#">Обратная связь</a></li>
+                <li><a href="#">Каталог</a></li>
+                <li class="nav-header">Дополнительные</li>
+                <li><a href="#">Наши филиалы</a></li>
+                <li><a href="#">Календарь мероприятий</a></li>
+                <li class="nav-divider"></li>
+                <li><a href="#">Вакансии</a></li>
+            </ul>
+
+            <li id="menu-item-43621"
+                class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children  menu-item-43621">
+                <a class="collapsible-header waves-effect arrow-r "><i class="fa fa-object-ungroup"></i>Utilities<i
+                        class="fa fa-angle-down rotate-icon"></i></a>
+                <div class="collapsible-body">
+                    <ul class="sub-menu">
+                        <li id="menu-item-44246"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44246"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44246"
+                                href="https://mdbootstrap.com/utilities/bootstrap-borders/">Borders</a></li>
+                        <li id="menu-item-44247"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44247"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44247"
+                                href="https://mdbootstrap.com/utilities/bootstrap-clearfix/">Clearfix</a></li>
+                        <li id="menu-item-44248"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44248"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44248"
+                                href="https://mdbootstrap.com/utilities/bootstrap-close-icon/">Close icon</a></li>
+                        <li id="menu-item-44249"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44249"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44249"
+                                href="https://mdbootstrap.com/utilities/bootstrap-display-property/">Display</a></li>
+                        <li id="menu-item-44250"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44250"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44250"
+                                href="https://mdbootstrap.com/utilities/bootstrap-embeds/">Embeds</a></li>
+                        <li id="menu-item-44251"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44251"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44251"
+                                href="https://mdbootstrap.com/utilities/bootstrap-float/">Float</a></li>
+                        <li id="menu-item-44252"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44252"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44252"
+                                href="https://mdbootstrap.com/utilities/flexbox/">Flexbox</a></li>
+                        <li id="menu-item-44253"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44253"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44253"
+                                href="https://mdbootstrap.com/utilities/bootstrap-image-replacement/">Image
+                            replacement</a></li>
+                        <li id="menu-item-44254"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44254"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44254"
+                                href="https://mdbootstrap.com/utilities/bootstrap-position/">Position</a></li>
+                        <li id="menu-item-44255"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44255"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44255"
+                                href="https://mdbootstrap.com/utilities/bootstrap-screenreaders/">Screenreaders</a></li>
+                        <li id="menu-item-44256"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44256"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44256"
+                                href="https://mdbootstrap.com/utilities/bootstrap-sizing/">Sizing</a></li>
+                        <li id="menu-item-44257"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44257"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44257"
+                                href="https://mdbootstrap.com/utilities/bootstrap-spacing/">Spacing</a></li>
+                        <li id="menu-item-44258"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44258"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44258"
+                                href="https://mdbootstrap.com/utilities/bootstrap-text/">Text</a></li>
+                        <li id="menu-item-44259"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44259"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44259"
+                                href="https://mdbootstrap.com/utilities/bootstrap-vertical-align/">Vertical align</a>
+                        </li>
+                        <li id="menu-item-44260"
+                            class="menu-item menu-item-type-post_type menu-item-object-page  menu-item-44260"><a
+                                class="collapsible-header waves-effect" id="link-menu-item-44260"
+                                href="https://mdbootstrap.com/utilities/bootstrap-visibility/">Visibility</a></li>
+                    </ul>
+                </div>
+            </li>
+
+
+            <ul class=" list-unstyled">
+                <a href="#">
+                    <li>Главная</li>
+                </a>
+                <a href="#">
+                    <li>Портфолио</li>
+                </a>
+                <a href="#">
+                    <li>Автор</li>
+                </a>
+                <a href="#">
+                    <li>Контакты</li>
+                </a>
+            </ul>
 
             <h2>Links</h2>
 
@@ -76,70 +185,37 @@
         {{block "content" .}}
         <div id="content" class="col-xs-12 col-md-10  col-sm-9">
             {{.Body}}
-            <div class="row"><style> #sidebar-left {
-                padding-top: 30px;
-            } </style>
+            <div id="gallery" class="row">
+                <style> #sidebar-left {
+                    padding-top: 30px;
+                } </style>
                 <div class="col-md-12 col-sm-12">
-                {{if .Pager.Prev}}<a href="{{.Pager.Prev}}" class=""><span class="button__text">Назад</span></a>{{end}}
-                {{- range .Pager.Elem}}
-                {{if .Current}}
-                <a class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-                {{else}}
-                <a href="{{.Url}}" class="{{.Class}}"><span class="button__text">{{.Page}}</span></a>
-                {{end}}
-                {{- end}}
-                {{if .Pager.Next}}<a href="{{.Pager.Next}}" class=""><span class="button__text">Вперед</span></a>{{end}}
-                </div>{{- range .Links}}
-                        {{/*
-                        <div class="col-md-4">
-                            <div class="img-thumbnail">
-                                <a style="text-align:center;" href="{{.URL}}"><img class="img-thumbnail"
-                                                                                   src="{{.Image}}"><br><br>{{.Brief}}</a>
-                            </div>
-                        </div>
-                            */}}<div class="col-xs-12 col-sm-6 col-md-4">
-                                <div class="thumbnail" >
-                                    <img src="{{.Image}}" alt="..."
-                                         class=".img-fluid">
-                                    <div class="caption">
-                                        {{/* <div style="max-height: 300px;word-wrap: break-word;overflow: hidden;"> */}}
-                                        <h4>{{.Brief}}</h4>
-                                        <p>{{.Description}}</p>
-                                        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                                           class="btn btn-default"
-                                                                                                           role="button">Button</a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            {{/*
-                            <div class="img-thumbnail">
-                                <img src="{{.Image}}" alt="...">
-                                <div class="caption">
-                                    <h3>Заголовок...</h3>
-                                    <p>Контент...</p>
-                                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                                       class="btn btn-default"
-                                                                                                       role="button">Button</a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="price">{{.Price}}</div>
-                            */}}{{/*
-                            <li><a href="{{.URL}}">{{.Brief}}</a></li>
-
-                            <div class="btn-group "><a class="btn" href="/cart/?additem={{.VendorCode}}" rel="nofollow"
-                                                       id="addToCart_btn">Купить</a></div>
-
-                        */}}
-                        {{- end}}
-                <div class="col-sm-12 col-md-12">
-                {{.Timer}}
+                    {{template "paginator" .}}
                 </div>
+                {{- range .Links}}
+                <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <a href="{{.URL}}"><img src="{{.Image}}" alt="..."
+                                                class=".img-fluid"></a>
+                        <div class="caption">
+
+                            <h4><a href="{{.URL}}">{{.Brief}}</a></h4>
+                            <p>{{.Description}}</p>
+                            <p><a href="{{.URLtoCart}}" class="btn btn-primary" role="button">Купить</a> <a href="#"
+                                                                                                            class="btn btn-default"
+                                                                                                            role="button">Button</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {{- end}}
+                <div class="col-md-12 col-sm-12">{{template "paginator" .}}</div>
+                <div class="col-sm-12 col-md-12">{{.Timer}}</div>
             </div>
         </div>
+        {{end}}
     </div>
-    {{end}}
 </div>
 </div>
 </body>

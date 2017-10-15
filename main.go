@@ -47,7 +47,7 @@ func main() {
 
 // The default template includes two template blocks ("sidebar" and "content")
 // that may be replaced in templates derived from this one.
-var mainTemplate = template.Must(template.ParseFiles("index.tmpl"))
+var mainTemplate = template.Must(template.ParseFiles("index.tmpl","paginator.tmpl"))
 // image Template is a clone of index Template that provides
 // alternate "sidebar" and "content" templates.
 var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("image.tmpl"))
@@ -61,7 +61,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	type LinkType struct {
 		mydb.GoodsElem_type
 
-		URL, Title, Image string
+		URL, URLtoCart, Title, Image string
+		Separator3 int
 	}
 	var data struct{
 		Title, Body string
@@ -110,8 +111,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var l, h int
 	data.Pager, l, h = webelements.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage+"?")
-	for _,i := range goods.Sel[mainPage][l:h] {
-		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "","/images/400/"+ goods.O[i].VendorCode+".jpg"})
+	for t,i := range goods.Sel[mainPage][l:h] {
+		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
 	}
 
 	data.Cat=goods.Category1list
