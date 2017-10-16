@@ -1,4 +1,5 @@
 {{define "paginator"}}
+{{if or .Pager.Prev .Pager.Next}}
 <ul class="pagination  pagination-sm">
     {{if .Pager.Prev}}<li><a href="{{.Pager.Prev}}">&laquo;</a></li>
     {{else}}<li class="disabled"><span>&laquo;</span></li>
@@ -12,6 +13,7 @@
     {{else}}<li class="disabled"><span>&raquo;</span></li>
     {{end}}
 </ul>
+{{end}}
 {{end}}
 {{/*
 
