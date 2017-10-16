@@ -10,7 +10,7 @@
             font-family: sans-serif;
         }
 
-        h1 {
+        .h11 {
             background: #ddd;
         }
 
@@ -53,12 +53,11 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-        <div  class="col-md-12 col-sm-12 col-xs-12">
-            <div  style="float:left"><h1>{{.Title}}<small>{{.Session}}</small></h1></div>
-            <div  style="float:right">
-        <form class="col-md-12 col-sm-12 form-inline">
+        <div  class="col-md-12 col-sm-12 col-xs-12 h11">
+            <div><h1>{{.Title}}<small>{{.Session}}</small></h1></div><div style="float:right">
+        <form class="col-md-12 col-sm-12 form-inline" action="/search/">
             <div class="input-group input-group-sm">
-                <input type="search" class="form-control" placeholder="Поиск по каталогу...">
+                <input name="text" type="search" class="form-control" placeholder="Поиск по каталогу...">
                 <span class="input-group-btn"><button class="btn btn-primary" type="submit">Найти</button></span>
             </div>
         </form>
