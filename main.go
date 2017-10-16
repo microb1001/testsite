@@ -72,6 +72,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		Timer time.Duration //Timer
 		Session uint64
 	}
+	var p []string
 	start := time.Now()
 	data.Session =webelements.SessionGet(w,r)
 	goods.Mu.RLock()
@@ -79,6 +80,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	searchstring := r.FormValue("text")
 	if searchstring != "" {
+		p=append(p,"text="+searchstring)
 		otv:=Sphi.Find(searchstring)
 		for _,i:=range otv{
 			fmt.Println(goods.O[i].Description)
@@ -110,7 +112,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		pageCurrent = 0
 	}
 	var l, h int
-	data.Pager, l, h = webelements.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage+"?")
+	mainPage2:=mainPage+"?"
+	for _,i:=range p{
+		mainPage2=mainPage2+"&"+i
+	}
+	data.Pager, l, h = webelements.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
 	for t,i := range goods.Sel[mainPage][l:h] {
 		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
 	}
