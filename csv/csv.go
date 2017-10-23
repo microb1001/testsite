@@ -127,31 +127,3 @@ func Dump(datasets interface{}) {
 //c := intPtr2.Elem().Interface().(int) преобразование типов
 
 
-// Пример парсинга csv
-// Не используется удалить
-/*
-func parse(fname string,fields []string){
-
-	csvFile, _ := os.Open(fname)
-	r := csv.NewReader(bufio.NewReader(csvFile))
-	r.Comma = ';'
-	var people []good
-	for {
-		line, err := r.Read()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			log.Fatal(err)
-		}
-		people = append(people, good{
-			Articul: line[0],
-			Info:  line[1],
-			Image: line[2],
-		})
-		fmt.Println(line)
-	}
-	fmt.Println(people)
-
-
-}
-*/

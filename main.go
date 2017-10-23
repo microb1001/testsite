@@ -13,6 +13,7 @@ import (
 	db "./mydb"
 	"./webelements/session"
 	"./webelements/sphinx"
+	"./webelements/pager"
 )
 
 const items_per_page=10
@@ -73,7 +74,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var data struct{
 		Title, Body string
 		Links       []LinkType
-		Pager       web.PagerType
+		Pager       pager.Pager
 		Cat         []db.Category1List_type
 		Timer       time.Duration //Timer
 		Session     uint64
@@ -122,7 +123,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	for _,i:=range p{
 		mainPage2=mainPage2+"&"+i
 	}
-	data.Pager, l, h = web.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
+	data.Pager, l, h = pager.Set(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
 	for t,i := range goods.Sel[mainPage][l:h] {
 		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
 	}
