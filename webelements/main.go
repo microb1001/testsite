@@ -20,26 +20,29 @@ import (
 
 	"index/suffixarray"
 	"sort"
+	"bytes"
 )
 const COOKIES_NAME="PHPSESSID"
 
-func SessionGet (w http.ResponseWriter, r *http.Request) uint64{
+//
+// Получает id сессии в виде uint64, если сессии нет, создает
+//
+func SessionGet(w http.ResponseWriter, r *http.Request) uint64 {
 	var id *http.Cookie
 	var res uint64
-	id,err:=r.Cookie(COOKIES_NAME)
-	if err==nil {
-		res,err=strconv.ParseUint(id.Value,10,64)
+	id, err := r.Cookie(COOKIES_NAME)
+	if err == nil { // кука
+		res, err = strconv.ParseUint(id.Value, 10, 64)
+		if err == nil {
+			return res
+		}
 	}
-	if err==nil {
+	res, err = strconv.ParseUint(r.FormValue(COOKIES_NAME), 10, 64)
+	if err == nil { // GET параметр
 		return res
 	}
-	res,err=strconv.ParseUint(r.FormValue(COOKIES_NAME),10,64)
-	if err==nil{
-		return res
-	}
-	res=Rand64 ()
-	id=&http.Cookie{Name:COOKIES_NAME,Value:strconv.FormatUint(res, 10)}
-	http.SetCookie(w , id)
+	res = Rand64() // создать
+	http.SetCookie(w, &http.Cookie{Name: COOKIES_NAME, Value: strconv.FormatUint(res, 10)})
 	return res
 }
 
@@ -73,8 +76,12 @@ type PagerType struct{
 	Next string
 	Prev string
 }
-
+//
+// Возвращает структуру для создания страниц в template
+// i,j какие элементы списка сейчас будут отображаться
+//
 func Pager(Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType, i, j int) {
+	const PAGERWIDTH  = 2
 	maxPage := (itemsCnt - 1) / items_per_page // начинается с нуля
 	if Page > 0 {
 		newP.Prev = urlPart + "p=" + strconv.Itoa(Page-1)
@@ -82,16 +89,18 @@ func Pager(Page, items_per_page, itemsCnt int, urlPart string) (newP PagerType, 
 	if Page < maxPage {
 		newP.Next = urlPart + "p=" + strconv.Itoa(Page+1)
 	}
-	for ii := MinMax(Page-2, 0, maxPage); ii <= MinMax(Page+2, 0, maxPage); ii++ {
+	for ii := MinMax(Page-PAGERWIDTH, 0, maxPage); ii <= MinMax(Page+PAGERWIDTH, 0, maxPage); ii++ {
 		newP.Elem = append(newP.Elem, PagerElemType{ii + 1, "", urlPart + "p=" + strconv.Itoa(ii), ii == Page})
 	}
 	i = MinMax((Page)*items_per_page, 0, itemsCnt)
 	j = MinMax((Page+1)*items_per_page, 0, itemsCnt)
 	return
 }
-/*  пример управляемой FileServer
-почитать здесь https://golang.org/src/net/http/fs.go
-	) */
+//
+// позволяет отраничить FileServer по типам отдаваемых файлов
+// пример управляемой FileSystem почитать здесь https://golang.org/src/net/http/fs.go
+//
+
 type MyFs struct {
 	http.FileSystem
 }
@@ -111,10 +120,11 @@ func (mfs MyFs) Open(fname string) (http.File, error) {
 		if len(Splits)==2 {name=Splits[1]; folder=Splits[0]
 		} else {return nil,os.ErrPermission}
 
-		nm:= "/"+folder+name+ext
+		nm:= "/"+folder+name+ext // надо поствить проверку только английские буквы и цифры
 		f, err := mfs.FileSystem.Open(nm)
 
 		if err != nil && (folder=="pre/"||folder=="200/"||folder=="300/"||folder=="400/"){
+			// нет файла - содать
 			mfsAsDir,ok:=mfs.FileSystem.(http.Dir)
 			if !ok {return nil,os.ErrPermission}
 			basedir:=string (mfsAsDir)
@@ -123,7 +133,6 @@ func (mfs MyFs) Open(fname string) (http.File, error) {
 				fmt.Println("a1",err8)
 				imgDim=150
 			}
-			fmt.Println("aa",err8)
 			Thumb(basedir+name+ext,basedir+folder+name+ext,imgDim,imgDim) // опасно если folder или name могут содержать что нибудь кроме текста
 
 			f, err = mfs.FileSystem.Open(folder+name+ext)
@@ -223,7 +232,7 @@ type AddToSphinx interface {
 func (s *Sphinx) Add(w AddToSphinx){
 	for i:=0;i<w.Len();i++{
 		s.Data =append (s.Data, 0)
-		s.Data =append (s.Data, w.ToByte(i)...)
+		s.Data =append (s.Data, bytes.ToLower(w.ToByte(i))...)
 		s.key=append(s.key,len(s.Data))
 	}
 	s.Data =append (s.Data, 0)
@@ -231,7 +240,7 @@ func (s *Sphinx) Add(w AddToSphinx){
 }
 
 func (s *Sphinx) Find(str string) (ret []int) {
-	tempRet := s.index.Lookup([]byte(str), -1)
+	tempRet := s.index.Lookup(bytes.ToLower([]byte(str)), -1)
 	sort.Ints(tempRet)
 	var i, j int = 0, 0
 	var out bool = true // Повторы убрать
