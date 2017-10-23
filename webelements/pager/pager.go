@@ -17,10 +17,9 @@ type Pager struct{
 	Next string
 	Prev string
 }
-//
+
 // Возвращает структуру для создания страниц в template
 // i,j какие элементы списка сейчас будут отображаться
-//
 func Set(Page, items_per_page, itemsCnt int, urlPart string) (newP Pager, i, j int) {
 	const PAGERWIDTH  = 2
 	maxPage := (itemsCnt - 1) / items_per_page // начинается с нуля
