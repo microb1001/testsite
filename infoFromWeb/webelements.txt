@@ -1,0 +1,160 @@
+
+/*
+func Ty (w AddToSphinx){
+
+}
+func Test(){
+	var goods Goods
+	var d Goods
+	var e Sphinx
+	//	var d S
+
+	e.Add(&goods)
+	Ty(&d)
+	//webelements.Ty2(&goods)
+}
+
+type S struct { i int }
+func (p *S) Get() int  { return p.i }
+func (p *S) Put(v int) { p.i = v }
+
+
+type I interface {
+	Get() int
+	Put(int)
+}
+func ty (m I){
+
+}
+func Ty2 (m AddToSphinx){
+
+}
+func Test2(){
+	var goods Goods
+	var e Sphinx
+	var d S
+
+	e.Add(&goods)
+	ty(&d)
+	Ty2(&goods)
+}
+type Good struct {
+	UIN int `csv:"UIN"`
+	Barcode int
+	VendorCode string `csv:"Артикул"`
+	Brief string `csv:"Описание"`
+	Price int `csv:"Цена"`
+	Quantity int `csv:"Количество"`
+	Available bool `csv:"В продаже"`
+	MainCategory string `csv:"Категория"`
+	Category string `csv:"Товар"`
+	Spec map[string]string `csv:"Поиск"`
+	Pictures string   `csv:"Артикул"`
+	Info  int  `csv:"N"`
+	ShortDescription string `csv:"Описание"`
+	Description string   `csv:"Характеристика"`
+	Images string
+	UrlAlias string `csv:"Path"`
+}
+
+type Goods struct {
+	Mu            sync.RWMutex
+	O             []Good
+
+	Goodsmap      map[string]int
+	Sel           map[string][]int
+	category1     map[string]map[string]string
+	category2     map[string]string
+	//Category1list [] Category1listType
+	category2list [] struct{key, value string}
+}
+
+func (s *Goods) String (i int) []byte {
+	return []byte(s.O[0].Description)
+}
+
+*/
+
+
+
+
+
+/*
+	func main() {
+		fs := justFiles Filesystem{http.Dir("/tmp/")}
+		http.ListenAndServe(":8080", http.FileServer(fs))
+	}
+
+
+func
+I've settled on the following, which has the added benefit of returning 404 for directories.
+
+
+Corrections appreciated.
+
+
+
+type justFilesFilesystem struct {
+   Fs http.FileSystem
+
+}
+
+func (fs justFilesFilesystem) Open(name string) (http.File, error) {
+   f, err := fs.Fs.Open(name)
+
+   if err != nil {
+      return nil, err
+   }
+
+   stat, err := f.Stat()
+   if stat.IsDir() {
+      return nil, os.ErrNotExist
+   }
+
+   return f, nil
+}
+
+// A File is returned by a FileSystem's Open method and can be
+
+// served by the FileServer implementation.
+
+//
+
+// The methods should behave the same as those on an *os.File.
+
+type File interface {
+
+	io.Closer
+
+	io.Reader
+
+	io.Seeker
+
+	Readdir(count int) ([]os.FileInfo, error)
+
+	Stat() (os.FileInfo, error)
+
+}
+// you need the image package, and a format package for encoding/decoding
+import (
+    "bytes"
+    "image"
+    "image/jpeg"
+
+    // if you don't need to use jpeg.Encode, import like so:
+    // _ "image/jpeg"
+)
+
+// Decoding gives you an Image.
+// If you have an io.Reader already, you can give that to Decode
+// without reading it into a []byte.
+image, _, err := image.Decode(bytes.NewReader(Data))
+// check err
+
+newImage := resize.Resize(160, 0, original_image, resize.Lanczos3)
+
+// Encode uses a Writer, use a Buffer if you need the raw []byte
+err = jpeg.Encode(someWriter, newImage, nil)
+// check err
+
+*/
