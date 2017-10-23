@@ -11,13 +11,15 @@ import (
 	"index/suffixarray"
 	web "./webelements"
 	db "./mydb"
+	"./webelements/session"
+	"./webelements/sphinx"
 )
 
 const items_per_page=10
 var goods db.Goods_type
 var userCart map[uint64]db.Usercart_type
 var index *suffixarray.Index
-var Sphi web.Sphinx
+var Sphi sphinx.Sphinx
 //var Context web.SessionListType =
 
 func main() {
@@ -78,7 +80,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var p []string
 	start := time.Now()
-	data.Session = web.SessionGet(w,r)
+	data.Session = session.Get(w,r)
 	goods.Mu.RLock()
 	defer goods.Mu.RUnlock()
 
@@ -168,7 +170,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data datatype = datatype{goods.O[dataindex],
-		[]spec1type{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", web.SessionGet(w, r)}
+		[]spec1type{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", session.Get(w, r)}
 	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
 		if data.Spec[item3] != "" {
 			data.Spec1 = append(data.Spec1, spec1type{item3, data.Spec[item3]})
@@ -187,7 +189,7 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 		UserCart    db.Usercart_type
 		Session     uint64
 	}
-	sessid := web.SessionGet(w, r)
+	sessid := session.Get(w, r)
 	data.Session = sessid
 	if r.FormValue("additem") != "" {
 		goodsid := goods.Goodsmap[r.FormValue("additem")]
@@ -207,7 +209,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		Session      uint64
 		SearchResult []int
 	}
-	sessid := web.SessionGet(w, r)
+	sessid := session.Get(w, r)
 	data.Session = sessid
 	searchstring := r.FormValue("text")
 	fmt.Println("=============",[]byte(searchstring))
