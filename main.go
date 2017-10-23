@@ -8,7 +8,6 @@ import (
 	"time"
 	"fmt"
 	"strconv"
-	"index/suffixarray"
 	web "./webelements"
 	db "./mydb"
 	"./webelements/session"
@@ -19,7 +18,6 @@ import (
 const items_per_page=10
 var goods db.Goods_type
 var userCart map[uint64]db.Usercart_type
-var index *suffixarray.Index
 var Sphi sphinx.Sphinx
 //var Context web.SessionListType =
 
@@ -35,16 +33,9 @@ func main() {
 	fmt.Println(rus,eng,digit)
 	fmt.Println(string(web.OnlyS([]byte("100asd5fgфывап.:/"), web.Only_MakeFn(append(eng,rus...)))))
 	userCart = make(map[uint64]db.Usercart_type)
-	var tmpstring []byte
-	for _,k:=range goods.O {
-		tmpstring=append(tmpstring,[]byte(k.Description)...)
-	}
-	fmt.Println(tmpstring)
-	index = suffixarray.New(tmpstring)
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
 	http.HandleFunc("/cart/", cartHandler)
-	http.HandleFunc("/search1/", searchHandler)
 	fs1 := web.MyFs{http.Dir("img/")}
 	//http.ListenAndServe(":8080", http.FileServer(fs1))
 	//fs := http.FileServer(http.Dir("img/"))
@@ -88,16 +79,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	searchstring := r.FormValue("text")
 	if searchstring != "" {
 		p=append(p,"text="+searchstring)
-		otv:=Sphi.Find(searchstring)
-		for _,i:=range otv{
-			fmt.Println(goods.O[i].Description)
-		}
-
-		//SearchResult:=index.Lookup([]byte(searchstring), -1)
 	}
-
-
-
 
 	//_=r.ParseForm() // Само вызывается из FormValue
 	fmt.Println("URL.Path: ",r.URL.Path," RawPath: ",r.URL.RawPath," RequestURI():",r.URL.RequestURI(),"Host: ",r.Host,"FormValue: ",r.FormValue("p"))
@@ -113,7 +95,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	if mainPage=="/search/" {
 		goods.Sel[mainPage]=Sphi.Find(searchstring)
 	}
-	fmt.Println("<<<<<<<<<<<<<<<",goods.Sel[mainPage])
 	pageCurrent,err:=strconv.Atoi(r.FormValue("p"))
 	if err != nil {
 		pageCurrent = 0
@@ -198,34 +179,6 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data.UserCart = userCart[sessid]
 	if err := cartTemplate.Execute(w, data); err != nil {
-		log.Println(err)
-	}
-}
-
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	var data struct {
-		Title, Body  string
-		db.User_type
-		UserCart     db.Usercart_type
-		Session      uint64
-		SearchResult []int
-	}
-	sessid := session.Get(w, r)
-	data.Session = sessid
-	searchstring := r.FormValue("text")
-	fmt.Println("=============",[]byte(searchstring))
-	if searchstring != "" {
-		otv:=Sphi.Find(searchstring)
-		fmt.Println(otv)
-		for _,i:=range otv{
-			fmt.Println(goods.O[i].Description)
-		}
-
-		data.SearchResult=index.Lookup([]byte(searchstring), -1)
-	}
-
-	data.UserCart = userCart[sessid]
-	if err := searchTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
 }
