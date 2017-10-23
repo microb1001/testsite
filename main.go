@@ -19,7 +19,6 @@ const items_per_page=10
 var goods db.Goods_type
 var userCart map[uint64]db.Usercart_type
 var Sphi sphinx.Sphinx
-//var Context web.SessionListType =
 
 func main() {
 	goods.Init("list.csv")
@@ -52,8 +51,8 @@ var imageTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles
 
 var cartTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("cart.tmpl"))
 var searchTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles("search.tmpl"))
-// mainHandler is an HTTP handler that serves the index page (list of goods).
 
+// mainHandler is an HTTP handler that serves the index page (list of goods).
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	type LinkType struct {
@@ -120,15 +119,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("timer ",cnt, elapsed)
 }
 
-
-
-
-// Image is a data structure used to populate an imageTemp9late.
-type Image struct {
-	Title string
-	URL   string
-}
-
 // imageHandler is an HTTP handler that serves the image pages.
 func imageHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -156,7 +146,6 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
 		if data.Spec[item3] != "" {
 			data.Spec1 = append(data.Spec1, spec1type{item3, data.Spec[item3]})
-
 		}
 	}
 
