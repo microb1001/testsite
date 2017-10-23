@@ -8,17 +8,17 @@ import (
 	"time"
 	"fmt"
 	"strconv"
-	"./webelements"
-	"./mydb"
 	"index/suffixarray"
+	web "./webelements"
+	db "./mydb"
 )
 
 const items_per_page=10
-var goods mydb.Goods_type
-var userCart map[uint64]mydb.Usercart_type
+var goods db.Goods_type
+var userCart map[uint64]db.Usercart_type
 var index *suffixarray.Index
-var Sphi webelements.Sphinx
-//var Context webelements.SessionListType =
+var Sphi web.Sphinx
+//var Context web.SessionListType =
 
 func main() {
 	goods.Init("list.csv")
@@ -26,8 +26,12 @@ func main() {
 	//mycsv.Dump(goods)
 	Sphi.Init()
 	Sphi.Add(&goods)
-	fmt.Println("--",string(webelements.OnlyS([]byte("asdfgфывап"),webelements.Only_Rus)))
-	userCart = make(map[uint64]mydb.Usercart_type)
+	rus:=[][]rune{[]rune{'а','я'},[]rune{'А','Я'}}
+	digit:=[][]rune{[]rune{'0','9'}}
+	eng:=[][]rune{[]rune{'a','z'},[]rune{'A','Z'}}
+	fmt.Println(rus,eng,digit)
+	fmt.Println(string(web.OnlyS([]byte("100asd5fgфывап.:/"), web.Only_MakeFn(append(eng,rus...)))))
+	userCart = make(map[uint64]db.Usercart_type)
 	var tmpstring []byte
 	for _,k:=range goods.O {
 		tmpstring=append(tmpstring,[]byte(k.Description)...)
@@ -38,7 +42,7 @@ func main() {
 	http.HandleFunc("/product/", imageHandler)
 	http.HandleFunc("/cart/", cartHandler)
 	http.HandleFunc("/search1/", searchHandler)
-	fs1 := webelements.MyFs{http.Dir("img/")}
+	fs1 := web.MyFs{http.Dir("img/")}
 	//http.ListenAndServe(":8080", http.FileServer(fs1))
 	//fs := http.FileServer(http.Dir("img/"))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer( fs1))) // небезопасно отдает файлы любого типа!
@@ -59,22 +63,22 @@ var searchTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFile
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	type LinkType struct {
-		mydb.GoodsElem_type
+		db.GoodsElem_type
 
 		URL, URLtoCart, Title, Image string
 		Separator3 int
 	}
 	var data struct{
 		Title, Body string
-		Links []LinkType
-		Pager webelements.PagerType
-		Cat []mydb.Category1List_type
-		Timer time.Duration //Timer
-		Session uint64
+		Links       []LinkType
+		Pager       web.PagerType
+		Cat         []db.Category1List_type
+		Timer       time.Duration //Timer
+		Session     uint64
 	}
 	var p []string
 	start := time.Now()
-	data.Session =webelements.SessionGet(w,r)
+	data.Session = web.SessionGet(w,r)
 	goods.Mu.RLock()
 	defer goods.Mu.RUnlock()
 
@@ -116,7 +120,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	for _,i:=range p{
 		mainPage2=mainPage2+"&"+i
 	}
-	data.Pager, l, h = webelements.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
+	data.Pager, l, h = web.Pager(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
 	for t,i := range goods.Sel[mainPage][l:h] {
 		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
 	}
@@ -149,7 +153,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type datatype struct {
-		mydb.GoodsElem_type
+		db.GoodsElem_type
 		Spec1   []spec1type
 		Title   string
 		URL     string
@@ -164,7 +168,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data datatype = datatype{goods.O[dataindex],
-		[]spec1type{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", webelements.SessionGet(w, r)}
+		[]spec1type{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", web.SessionGet(w, r)}
 	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
 		if data.Spec[item3] != "" {
 			data.Spec1 = append(data.Spec1, spec1type{item3, data.Spec[item3]})
@@ -179,11 +183,11 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 func cartHandler(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Title, Body string
-		mydb.User_type
-		UserCart    mydb.Usercart_type
+		db.User_type
+		UserCart    db.Usercart_type
 		Session     uint64
 	}
-	sessid := webelements.SessionGet(w, r)
+	sessid := web.SessionGet(w, r)
 	data.Session = sessid
 	if r.FormValue("additem") != "" {
 		goodsid := goods.Goodsmap[r.FormValue("additem")]
@@ -197,13 +201,13 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Title, Body string
-		mydb.User_type
-		UserCart    mydb.Usercart_type
-		Session     uint64
+		Title, Body  string
+		db.User_type
+		UserCart     db.Usercart_type
+		Session      uint64
 		SearchResult []int
 	}
-	sessid := webelements.SessionGet(w, r)
+	sessid := web.SessionGet(w, r)
 	data.Session = sessid
 	searchstring := r.FormValue("text")
 	fmt.Println("=============",[]byte(searchstring))
