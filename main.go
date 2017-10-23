@@ -13,6 +13,8 @@ import (
 	"./webelements/session"
 	"./webelements/sphinx"
 	"./webelements/pager"
+	"./webelements/escape"
+	//"./mydb/goods"
 )
 
 const items_per_page=10
@@ -26,11 +28,7 @@ func main() {
 	//mycsv.Dump(goods)
 	Sphi.Init()
 	Sphi.Add(&goods)
-	rus:=[][]rune{[]rune{'а','я'},[]rune{'А','Я'}}
-	digit:=[][]rune{[]rune{'0','9'}}
-	eng:=[][]rune{[]rune{'a','z'},[]rune{'A','Z'}}
-	fmt.Println(rus,eng,digit)
-	fmt.Println(string(web.OnlyS([]byte("100asd5fgфывап.:/"), web.Only_MakeFn(append(eng,rus...)))))
+	fmt.Println(string(escape.Go([]byte("100asd5fgфывап.:/"), escape.MakeFn(append(escape.Eng,escape.Rus...)))))
 	userCart = make(map[uint64]db.Usercart_type)
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/product/", imageHandler)
@@ -38,7 +36,7 @@ func main() {
 	fs1 := web.MyFs{http.Dir("img/")}
 	//http.ListenAndServe(":8080", http.FileServer(fs1))
 	//fs := http.FileServer(http.Dir("img/"))
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer( fs1))) // небезопасно отдает файлы любого типа!
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer( fs1)))
 	log.Fatal(http.ListenAndServe("localhost:80", nil))
 }
 
