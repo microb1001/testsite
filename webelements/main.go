@@ -257,6 +257,42 @@ func (s *Sphinx) Find(str string) (ret []int) {
 	}
 	return ret
 }
+// не работает но удобно сделать фильтр символов! аргумент - функция
+// rune это int32
+//
+func Only_EngAndDigit (r rune) rune{
+	return 100
+}
+func Only_Digit (r rune) rune{
+	return 0
+}
+func Only_NotSpecial (r rune) rune{
+	switch {
+	case r == 'a':
+		return -1
+	case r >= 'A' && r <= 'Z':
+		return 'A' + (r-'A'+13)%26
+	case r >= 'a' && r <= 'z':
+		return -100
+	}
+	return 0
+}
+func Only_Rus (r rune) rune{
+	switch {
+	case r == 'a':
+		return -1
+	case r >= 'A' && r <= 'Z':
+		return 'A' + (r-'A'+13)%26
+	case r >= 'a' && r <= 'z':
+		return r
+	}
+	return 0
+}
+
+func OnlyS(s_in []byte, F func(r rune) rune) (s_out []byte) {
+	//fmt.Printf("%s", bytes.Map(F, []byte("'Twas brillig Яandорл the Gslithy gopher...")))
+	return bytes.Map(F, []byte(s_in))
+}
 
 /*
 func Ty (w AddToSphinx){

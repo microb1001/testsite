@@ -26,7 +26,7 @@ func main() {
 	//mycsv.Dump(goods)
 	Sphi.Init()
 	Sphi.Add(&goods)
-
+	fmt.Println("--",string(webelements.OnlyS([]byte("asdfgфывап"),webelements.Only_Rus)))
 	userCart = make(map[uint64]mydb.Usercart_type)
 	var tmpstring []byte
 	for _,k:=range goods.O {
