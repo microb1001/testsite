@@ -156,7 +156,7 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 	data.Session = sessid
 	if r.FormValue("additem") != "" {
 		goodsid := goods.Goodsmap[r.FormValue("additem")]
-		userCart[sessid] = append(userCart[sessid], cart7.Elem{"",1,goods.O[goodsid]}) // refresh добавляет повтор убрать (можно через реферрер
+		userCart[sessid] = append(userCart[sessid], cart7.Elem{"+",1,goods.O[goodsid]}) // refresh добавляет повтор убрать (можно через реферрер
 	}
 	data.UserCart = userCart[sessid]
 	if err := cartTemplate.Execute(w, data); err != nil {
