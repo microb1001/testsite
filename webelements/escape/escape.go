@@ -6,6 +6,8 @@ import "bytes"
 // фильтр символов, второй аргумент функция фильтрования
 // rune это int32
 //
+// пример использования
+// 	fmt.Println(string(escape.Go([]byte("100asd5fgфывап.:/"), escape.MakeFn(append(escape.Eng,escape.Rus...)))))
 
 func Go(s_in []byte, F func(r rune) rune) (s_out []byte) {
 	return bytes.Map(F, s_in)
