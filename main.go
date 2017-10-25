@@ -146,11 +146,17 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 
 // отображает корзину
 func cartHandler(w http.ResponseWriter, r *http.Request) {
+	type LinkType1 struct {
+		cart7.Cart
+		URL, URLtoCart, Title, Image string
+	}
 	var data struct {
 		Title, Body string
 		user7.User_type
 		UserCart    cart7.Cart
 		Session     uint64
+		TotalCount int
+		TotalPrice int
 	}
 	sessid := session.Get(w, r)
 	data.Session = sessid
@@ -159,6 +165,12 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 		userCart[sessid] = append(userCart[sessid], cart7.Elem{"+",1,goods.O[goodsid]}) // refresh добавляет повтор убрать (можно через реферрер
 	}
 	data.UserCart = userCart[sessid]
+	data.TotalPrice = 0
+	data.TotalCount =0
+	for _,m:= range userCart[sessid]{
+	 data.TotalPrice+=m.Price
+	 data.TotalCount+=1
+	}
 	if err := cartTemplate.Execute(w, data); err != nil {
 		log.Println(err)
 	}
