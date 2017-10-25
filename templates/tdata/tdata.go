@@ -10,7 +10,7 @@ import(
 
 
 
-type LinkType struct {
+type ListItem struct {
 	good7.Elem
 
 	URL, URLtoCart, Title, Image string
@@ -18,7 +18,7 @@ type LinkType struct {
 }
 type List struct{
 	Title, Body string
-	Links       []LinkType
+	Links       []ListItem
 	Pager       pager.Pager
 	Cat         []good7.Category1List_type
 	Timer       time.Duration //Timer

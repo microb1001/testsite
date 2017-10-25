@@ -65,7 +65,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var pageCurrent int
 	var mainPage string
 
-	data.Links =make([]tdata.LinkType,0,items_per_page)
+	data.Links =make([]tdata.ListItem,0,items_per_page)
 	data.Title= "Image gallery 11-11"
 	data.Body = "Welcome to the image gallery."
 	mainPage=r.URL.Path // !!Нужна обработка пользовательского ввода!!
@@ -83,7 +83,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Pager, l, h = pager.Set(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
 	for t,i := range goods.Sel[mainPage][l:h] {
-		data.Links = append(data.Links, tdata.LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
+		data.Links = append(data.Links, tdata.ListItem{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
 	}
 
 	data.Cat=goods.Category1list
