@@ -14,7 +14,7 @@ import (
 	"./webelements/myfs"
 	"./mydb/good7"
 	"./mydb/cart7"
-	"./mydb/user7"
+	"./templates/tdata"
 )
 
 const items_per_page=10
@@ -46,20 +46,7 @@ var cartTemplate = template.Must(template.Must(mainTemplate.Clone()).ParseFiles(
 // mainHandler is an HTTP handler that serves the index page (list of goods).
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 
-	type LinkType struct {
-		good7.Elem
-
-		URL, URLtoCart, Title, Image string
-		Separator3 int
-	}
-	var data struct{
-		Title, Body string
-		Links       []LinkType
-		Pager       pager.Pager
-		Cat         []good7.Category1List_type
-		Timer       time.Duration //Timer
-		Session     uint64
-	}
+	var data tdata.List
 	var p []string
 	start := time.Now()
 	data.Session = session.Get(w,r)
@@ -78,7 +65,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var pageCurrent int
 	var mainPage string
 
-	data.Links =make([]LinkType,0,items_per_page)
+	data.Links =make([]tdata.LinkType,0,items_per_page)
 	data.Title= "Image gallery 11-11"
 	data.Body = "Welcome to the image gallery."
 	mainPage=r.URL.Path // !!Нужна обработка пользовательского ввода!!
@@ -96,7 +83,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Pager, l, h = pager.Set(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
 	for t,i := range goods.Sel[mainPage][l:h] {
-		data.Links = append(data.Links, LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
+		data.Links = append(data.Links, tdata.LinkType{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
 	}
 
 	data.Cat=goods.Category1list
@@ -112,17 +99,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 // imageHandler is an HTTP handler that serves the info about good.
 func imageHandler(w http.ResponseWriter, r *http.Request) {
 
-	type spec1type struct {
-		Key, Value string
-	}
-
-	type datatype struct {
-		good7.Elem
-		Spec1   []spec1type
-		Title   string
-		URL     string
-		Session uint64
-	}
 
 	dataindex, ok := goods.Goodsmap[strings.TrimPrefix(r.URL.Path, "/product/")]
 	//data, ok := images[strings.TrimPrefix(r.URL.Path, "/product/")]
@@ -131,11 +107,11 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data datatype = datatype{goods.O[dataindex],
-		[]spec1type{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", session.Get(w, r)}
+	var data tdata.Product = tdata.Product{goods.O[dataindex],
+		[]tdata.ProductSpec{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", session.Get(w, r)}
 	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
 		if data.Spec[item3] != "" {
-			data.Spec1 = append(data.Spec1, spec1type{item3, data.Spec[item3]})
+			data.Spec1 = append(data.Spec1, tdata.ProductSpec{item3, data.Spec[item3]})
 		}
 	}
 
@@ -146,18 +122,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 
 // отображает корзину
 func cartHandler(w http.ResponseWriter, r *http.Request) {
-	type LinkType1 struct {
-		cart7.Cart
-		URL, URLtoCart, Title, Image string
-	}
-	var data struct {
-		Title, Body string
-		user7.User_type
-		UserCart    cart7.Cart
-		Session     uint64
-		TotalCount int
-		TotalPrice int
-	}
+	var data tdata.Cart
 	sessid := session.Get(w, r)
 	data.Session = sessid
 	if r.FormValue("additem") != "" {
