@@ -34,7 +34,7 @@ func (mfs FileSystem) Open(fname string) (http.File, error) {
 	nm:= "/"+folder+name+ext // надо поствить проверку только английские буквы и цифры
 	f, err := mfs.FileSystem.Open(nm)
 
-	if err != nil && (folder=="pre/"||folder=="200/"||folder=="300/"||folder=="400/"){
+	if err != nil && (folder=="pre/"||folder=="200/"||folder=="300/"||folder=="400/"||folder=="100/"){
 		// нет файла - содать
 		mfsAsDir,ok:=mfs.FileSystem.(http.Dir)
 		if !ok {return nil,os.ErrPermission}

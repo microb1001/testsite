@@ -67,7 +67,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	data.Links =make([]tdata.ListItem,0,items_per_page)
 	data.Title= "Image gallery 11-11"
-	data.Body = "Welcome to the image gallery."
+	data.Body = ""
 	mainPage=r.URL.Path // !!Нужна обработка пользовательского ввода!!
 	if mainPage=="/search/" {
 		goods.Sel[mainPage]= sphi.Find(searchstring)
@@ -82,8 +82,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		mainPage2=mainPage2+"&"+i
 	}
 	data.Pager, l, h = pager.Set(pageCurrent,items_per_page, len(goods.Sel[mainPage]), mainPage2+"&")
-	for t,i := range goods.Sel[mainPage][l:h] {
-		data.Links = append(data.Links, tdata.ListItem{goods.O[i], "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",t%6})
+	for _,i := range goods.Sel[mainPage][l:h] {
+		data.Links = append(data.Links, tdata.ListItem{ "/product/" + goods.O[i].VendorCode, "/cart/?additem=" + goods.O[i].VendorCode,"","/images/400/"+ goods.O[i].VendorCode+".jpg",goods.O[i].Brief,goods.O[i].Description})
 	}
 
 	data.Cat=goods.Category1list
@@ -107,11 +107,11 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data tdata.Product = tdata.Product{goods.O[dataindex],
-		[]tdata.ProductSpec{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", session.Get(w, r)}
+	var data tdata.Product = tdata.Product{
+		[]tdata.ProductSpec{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", "",goods.O[dataindex].Description,session.Get(w, r)}
 	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
-		if data.Spec[item3] != "" {
-			data.Spec1 = append(data.Spec1, tdata.ProductSpec{item3, data.Spec[item3]})
+		if goods.O[dataindex].Spec[item3] != "" {
+			data.Spec1 = append(data.Spec1, tdata.ProductSpec{item3, goods.O[dataindex].Spec[item3]})
 		}
 	}
 
@@ -129,7 +129,9 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 		goodsid := goods.Goodsmap[r.FormValue("additem")]
 		userCart[sessid] = append(userCart[sessid], cart7.Elem{"+",1,goods.O[goodsid]}) // refresh добавляет повтор убрать (можно через реферрер
 	}
-	data.UserCart = userCart[sessid]
+	for _,kk := range userCart[sessid]{
+		data.UserCart = append(data.UserCart,tdata.CartElem{"","","","/images/200/"+ kk.VendorCode+".jpg",kk.Brief,kk.Description,kk.VendorCode,kk.Price})
+	}
 	data.TotalPrice = 0
 	data.TotalCount =0
 	for _,m:= range userCart[sessid]{

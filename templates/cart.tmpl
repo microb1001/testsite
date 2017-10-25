@@ -1,14 +1,35 @@
 {{define "content"}}
-<div id="image">
 
-            {{- range .UserCart}}
-            <span class="n-product-spec__name-inner">{{.VendorCode}}</span>
-            <span class="n-product-spec__value-inner">{{.Price}}</span>
-            {{- end}}
-
+<div id="content" class="col-xs-12 col-md-4  col-sm-6">
+    <h3>Корзина</h3>
+    <div id="gallery" class="row">
+        <style> #sidebar-left {
+            padding-top: 30px;
+        } </style>
+        {{- range .UserCart}}
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="thumbnail">
+                <div class="row">
+                    <div class="col-xs-3 col-sm-3 col-md-3">
+                        <a href="{{.URL}}"><img src="{{.Image}}" alt="..."
+                                                class="pull-left"></a>
+                    </div>
+                    <div class="col-xs-9 col-sm-9 col-md-9">
+                        <p>{{.Description}}</p>
+                        <p class="pull-left"><h4>{{.Price}}</h4></p><p><a href="{{.URLtoCart}}" class="btn btn-primary btn-danger btn-xs" role="button">Удалить</a>
+                            <a href="{{.URL}}" class="btn btn-default btn-danger btn-xs" role="button">Подробнее</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{- end}}
+    </div>
+</div>
 {{end}}
 
- {{define "sidebar"}}
-<a href="/">Back</a>
+{{define "sidebar"}}
+<div id="content1" class="col-xs-12 col-md-8 col-sm-6">
+    <a href="/">Back</a><h3>Всего в корзине</h3>{{.TotalCount}}<h3>на сумму</h3>{{.TotalPrice}}
 </div>
 {{end}}
