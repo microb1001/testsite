@@ -111,7 +111,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 		[]tdata.ProductSpec{}, "", "/images/" + goods.O[dataindex].VendorCode + ".jpg", session.Get(w, r)}
 	for _, item3 := range []string{"Высота", "Ширина", "Диаметр", "Размер"} {
 		if data.Spec[item3] != "" {
-			data.Spec1 = append(data.Spec1, tdata.ProductSpec{item3, data.Spec[item3]})
+			data.SpecString = append(data.SpecString, tdata.ProductSpec{item3, data.Spec[item3]})
 		}
 	}
 

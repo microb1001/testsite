@@ -12,7 +12,6 @@ import(
 
 type LinkType struct {
 	good7.Elem
-
 	URL, URLtoCart, Title, Image string
 	Separator3 int
 }
@@ -31,10 +30,11 @@ type ProductSpec struct {
 
 type Product struct {
 	good7.Elem
-	Spec1   []ProductSpec
-	Title   string
-	URL     string
-	Session uint64
+
+	SpecString []ProductSpec
+	Title      string
+	URL        string
+	Session    uint64
 }
 
 type LinkType1 struct {
